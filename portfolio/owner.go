@@ -13,6 +13,15 @@ type Owner struct {
 	PortFolio []StockValue
 }
 
+// Stocks ...
+func (o Owner) Stocks() []Stock {
+	s := make([]Stock, 0)
+	for _, sv := range o.PortFolio {
+		s = append(s, sv.Stock)
+	}
+	return s
+}
+
 //BuySum gets the sum of spended money
 func (o Owner) BuySum() float32 {
 	var sum float32
