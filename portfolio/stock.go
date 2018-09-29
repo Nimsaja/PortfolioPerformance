@@ -38,22 +38,12 @@ type QuoteList struct {
 	sync.Mutex
 }
 
-// Yesterday value of stock for yesterday
-// func (q Quote) Yesterday(count float32) float32 {
-// 	return q.Close * count
-// }
-
-// Today value of stock for today
-// func (q Quote) Today(count float32) float32 {
-// 	return q.Price * count
-// }
-
 // New stock value list (channel with stock values)
 // cap: nb of stocks
-func New(sl []Stock) *QuoteList {
+func New(n int) *QuoteList {
 	return &QuoteList{
-		cap: len(sl),
-		ql:  make(chan Quote, len(sl)),
+		cap: n,
+		ql:  make(chan Quote, n),
 	}
 }
 

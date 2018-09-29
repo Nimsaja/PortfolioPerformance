@@ -21,7 +21,7 @@ func GetQuote(s portfolio.Stock) (portfolio.Quote, error) {
 
 //GetAllQuotes ...
 func GetAllQuotes(sl []portfolio.Stock) []portfolio.Quote {
-	ql := portfolio.New(sl)
+	ql := portfolio.New(len(sl))
 
 	for _, s := range sl {
 		go func(s portfolio.Stock) {
