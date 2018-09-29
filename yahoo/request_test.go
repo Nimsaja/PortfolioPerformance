@@ -3,7 +3,7 @@ package yahoo
 import (
 	"testing"
 
-	"github.com/Nimsaja/Portfolio/portfolio"
+	"github.com/Nimsaja/PortfolioPerformance/portfolio"
 )
 
 func TestGetQuote(t *testing.T) {

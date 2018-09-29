@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 
-	"github.com/Nimsaja/Portfolio/store"
-	"github.com/Nimsaja/Portfolio/yahoo"
+	"github.com/Nimsaja/PortfolioPerformance/store"
+	"github.com/Nimsaja/PortfolioPerformance/yahoo"
 
-	"github.com/Nimsaja/Portfolio/portfolio"
+	"github.com/Nimsaja/PortfolioPerformance/portfolio"
 )
 
 var (
