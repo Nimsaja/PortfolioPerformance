@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/Nimsaja/PortfolioPerformance/store"
 	"github.com/Nimsaja/PortfolioPerformance/yahoo"
@@ -36,7 +37,10 @@ var stockValue = []portfolio.StockValue{
 func main() {
 	jasmin := portfolio.Owner{Name: "Jasmin", PortFolio: stockValue}
 
+	start := time.Now()
 	qs := yahoo.GetAllQuotes(jasmin.Stocks())
+	fmt.Println("Elapsed time: ", time.Now().Sub(start))
+
 	fmt.Println("Quotes Today/Yesterday: ", jasmin.GetTodaySum(qs), jasmin.GetYesterdaySum(qs))
 	fmt.Println("Diffs Today/Yesterday: ", jasmin.GetTodaySum(qs)-jasmin.BuySum(), jasmin.GetYesterdaySum(qs)-jasmin.BuySum())
 
