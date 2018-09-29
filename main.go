@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/Nimsaja/Portfolio/store"
 	"github.com/Nimsaja/Portfolio/yahoo"
 
 	"github.com/Nimsaja/Portfolio/portfolio"
@@ -38,4 +39,7 @@ func main() {
 	qs := yahoo.GetAllQuotes(jasmin.Stocks())
 	fmt.Println("Quotes Today/Yesterday: ", jasmin.GetTodaySum(qs), jasmin.GetYesterdaySum(qs))
 	fmt.Println("Diffs Today/Yesterday: ", jasmin.GetTodaySum(qs)-jasmin.BuySum(), jasmin.GetYesterdaySum(qs)-jasmin.BuySum())
+
+	f := store.NewFile(jasmin.Name)
+	f.Save(jasmin.GetYesterdaySum(qs))
 }
