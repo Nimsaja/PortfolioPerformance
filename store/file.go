@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // File store for save data to File
@@ -50,18 +51,16 @@ func (file File) Save(quote float32) error {
 }
 
 //Load ...
-func (file File) Load(quote float32) error {
+func (file File) Load() ([]HistoricalData, error) {
 	//read in file
 	f, err := os.OpenFile(file.path, os.O_RDWR, 0600)
 	if err != nil {
-		return fmt.Errorf("Can not open file: %s, %v", file.path, err)
+		return nil, fmt.Errorf("Can not open file: %s, %v", file.path, err)
 	}
 
 	defer f.Close()
 
-	getHistoricalData(f)
-
-	return nil
+	return getHistoricalData(f)
 }
 
 func getHistoricalData(r io.Reader) ([]HistoricalData, error) {
@@ -98,4 +97,9 @@ func getHistoricalData(r io.Reader) ([]HistoricalData, error) {
 	}
 
 	return a, nil
+}
+
+//GetTime gets the time as time format
+func (h HistoricalData) GetTime() time.Time {
+	return time.Unix(int64(h.Time), 0)
 }

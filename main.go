@@ -40,6 +40,16 @@ func main() {
 	fmt.Println("Quotes Today/Yesterday: ", jasmin.GetTodaySum(qs), jasmin.GetYesterdaySum(qs))
 	fmt.Println("Diffs Today/Yesterday: ", jasmin.GetTodaySum(qs)-jasmin.BuySum(), jasmin.GetYesterdaySum(qs)-jasmin.BuySum())
 
+	//Save Values
 	f := store.NewFile(jasmin.Name)
 	f.Save(jasmin.GetYesterdaySum(qs))
+
+	//Load Values
+	a, err := f.Load()
+	if err != nil {
+		fmt.Println("Error ", err)
+	}
+	for _, d := range a {
+		fmt.Println(d.GetTime(), ": ", d.Value)
+	}
 }
