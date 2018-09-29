@@ -16,9 +16,9 @@ func main() {
 		portfolio.StockValue{Stock: amazon, Count: 7, Buy: 5000},
 	}
 
-	sum := jasmin.SumBuy()
+	sum := jasmin.BuySum()
 	fmt.Println("Jasmin: ", sum)
 
 	mario := portfolio.Owner{Name: "Mario"}
-	fmt.Println("Mario ", mario.SumBuy())
+	fmt.Println("Mario ", mario.BuySum())
 }

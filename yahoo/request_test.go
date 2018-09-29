@@ -30,6 +30,24 @@ func TestPrivateGetQuote(t *testing.T) {
 	}
 }
 
+func TestGetAllQuotes(t *testing.T) {
+	google := portfolio.Stock{Name: "Google", Symbol: "ABEC.DE"}
+	amazon := portfolio.Stock{Name: "Amazon", Symbol: "AMZ.DE"}
+
+	ql := GetAllQuotes([]portfolio.Stock{google, amazon})
+
+	if len(ql) != 2 {
+		t.Errorf("Expected a length of %v, got %v", 2, len(ql))
+	}
+
+	if (ql[0].Price * ql[1].Price) == 0 {
+		t.Errorf("Expected both prices to be greater than zero. Got %v and %v.", ql[0].Price, ql[1].Price)
+	}
+	if (ql[0].Close * ql[1].Close) == 0 {
+		t.Errorf("Expected both close values to be greater than zero. Got %v and %v.", ql[0].Close, ql[1].Close)
+	}
+}
+
 func TestConvertJSON2ResultIfResultArrayIsEmpty(t *testing.T) {
 	b := []byte(`{"quoteResponse":{"result":[],"error":null}}`)
 

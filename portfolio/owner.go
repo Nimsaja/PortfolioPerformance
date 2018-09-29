@@ -13,11 +13,27 @@ type Owner struct {
 	PortFolio []StockValue
 }
 
-//SumBuy gets the sum of spended money
-func (o Owner) SumBuy() float32 {
+//BuySum gets the sum of spended money
+func (o Owner) BuySum() float32 {
 	var sum float32
 	for _, p := range o.PortFolio {
 		sum += p.Buy * p.Count
+	}
+	return sum
+}
+
+//GetYesterdaySum calculates the sum for yesterday
+func (o Owner) GetYesterdaySum(qs Quotes) (sum float32) {
+	for _, sv := range o.PortFolio {
+		sum += sv.Count * qs.FindQuote(sv.Stock).Close
+	}
+	return sum
+}
+
+//GetTodaySum calculates the sum for today
+func (o Owner) GetTodaySum(qs Quotes) (sum float32) {
+	for _, sv := range o.PortFolio {
+		sum += sv.Count * qs.FindQuote(sv.Stock).Price
 	}
 	return sum
 }

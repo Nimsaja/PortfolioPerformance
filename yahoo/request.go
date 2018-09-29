@@ -19,6 +19,26 @@ func GetQuote(s portfolio.Stock) (portfolio.Quote, error) {
 	return portfolio.Quote{Stock: s, Close: r.Close, Price: r.Price}, err
 }
 
+//GetAllQuotes ...
+func GetAllQuotes(sl []portfolio.Stock) []portfolio.Quote {
+	ql := portfolio.New(sl)
+
+	for _, s := range sl {
+		go func(s portfolio.Stock) {
+			defer ql.Done()
+
+			q, err := GetQuote(s)
+			if err != nil {
+				log.Printf("could not get quote for %v, %v", s.Name, err)
+			}
+			ql.Add(q)
+		}(s)
+	}
+
+	//here we wait for all the go routines to be done
+	return ql.Wait()
+}
+
 func getQuote(s string) (Result, error) {
 	var result Result
 
