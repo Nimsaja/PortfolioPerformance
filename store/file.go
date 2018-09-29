@@ -19,7 +19,7 @@ func NewFile(s string) File {
 }
 
 func createPath(s string) string {
-	path := strings.TrimSpace(s)
+	path := strings.Replace(s, " ", "", -1)
 	path = strings.ToLower(path)
 	return path + ".txt"
 }
