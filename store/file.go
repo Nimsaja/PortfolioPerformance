@@ -17,8 +17,8 @@ type File struct {
 
 // HistoricalData time and quote value load from file
 type HistoricalData struct {
-	Time  int
-	Value float32
+	Time  int     `json:"time"`
+	Value float32 `json:"value"`
 }
 
 //NewFile ...
