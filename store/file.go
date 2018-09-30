@@ -15,8 +15,8 @@ type File struct {
 	path string
 }
 
-// HistoricalData time and quote value load from file
-type HistoricalData struct {
+// Data time and quote value load from file
+type Data struct {
 	Time      int       `json:"time"`
 	TimeHuman time.Time `json:"timehuman"` //need to check if this can be done on the client
 	Value     float32   `json:"value"`
@@ -52,7 +52,7 @@ func (file File) Save(quote float32) error {
 }
 
 //Load ...
-func (file File) Load() ([]HistoricalData, error) {
+func (file File) Load() ([]Data, error) {
 	//read in file
 	f, err := os.OpenFile(file.path, os.O_RDWR, 0600)
 	if err != nil {
@@ -61,11 +61,11 @@ func (file File) Load() ([]HistoricalData, error) {
 
 	defer f.Close()
 
-	return getHistoricalData(f)
+	return getData(f)
 }
 
-func getHistoricalData(r io.Reader) ([]HistoricalData, error) {
-	a := make([]HistoricalData, 0)
+func getData(r io.Reader) ([]Data, error) {
+	a := make([]Data, 0)
 	var s []string
 	var v float64
 	prevTimes := make(map[int]struct{})
@@ -94,7 +94,7 @@ func getHistoricalData(r io.Reader) ([]HistoricalData, error) {
 			return nil, fmt.Errorf("Error parsing quote value %v", err)
 		}
 
-		a = append(a, HistoricalData{Time: t, TimeHuman: getTime(t), Value: float32(v)})
+		a = append(a, Data{Time: t, TimeHuman: getTime(t), Value: float32(v)})
 	}
 
 	return a, nil

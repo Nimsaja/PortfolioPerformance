@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Nimsaja/PortfolioPerformance/data"
+	"github.com/Nimsaja/PortfolioPerformance/plot"
 	"github.com/Nimsaja/PortfolioPerformance/store"
 	"github.com/Nimsaja/PortfolioPerformance/yahoo"
 )
@@ -31,4 +32,6 @@ func main() {
 	for _, d := range a {
 		fmt.Println(d.TimeHuman, ": ", d.Value)
 	}
+
+	plot.Create(a, jasmin.GetTodaySum(qs), jasmin.BuySum())
 }

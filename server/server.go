@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/Nimsaja/PortfolioPerformance/data"
 	"github.com/Nimsaja/PortfolioPerformance/portfolio"
@@ -33,8 +34,10 @@ func corsAndOptionHandler(h http.Handler) http.HandlerFunc {
 func handler() http.Handler {
 	router := mux.NewRouter()
 
-	url := "/forcecall"
-	router.HandleFunc(url, getHistData).Methods("GET")
+	url := "/portfolio/forcecall"
+	router.HandleFunc(url, loadHistData).Methods("GET")
+	url = "/portfolio/table"
+	router.HandleFunc(url, getTableData).Methods("GET")
 
 	return corsAndOptionHandler(router)
 }
@@ -46,23 +49,33 @@ func main() {
 
 	http.Handle("/", handler())
 
-	fmt.Println("*******Open http://localhost:8080/forcecall*******")
+	fmt.Println("*******Open http://localhost:8080/portfolio/table*******")
 	fmt.Println()
 	appengine.Main()
 }
 
-func getHistData(w http.ResponseWriter, r *http.Request) {
+func loadHistData(w http.ResponseWriter, r *http.Request) {
 	qs := yahoo.GetAllQuotes(jasmin.Stocks())
 
 	//Save Values
 	f := store.NewFile(jasmin.Name)
 	f.Save(jasmin.GetYesterdaySum(qs))
+}
 
-	//Load Values
+func getTableData(w http.ResponseWriter, r *http.Request) {
+	//need to get all quotes for the current value
+	qs := yahoo.GetAllQuotes(jasmin.Stocks())
+
+	//Load Historical Data from File
+	f := store.NewFile(jasmin.Name)
 	a, err := f.Load()
 	if err != nil {
 		fmt.Println("Error ", err)
 	}
+
+	//add current value
+	d := store.Data{TimeHuman: time.Now(), Value: jasmin.GetTodaySum(qs)}
+	a = append(a, d)
 
 	writeOutAsJSON(w, a)
 }
