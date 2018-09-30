@@ -29,6 +29,6 @@ func main() {
 		fmt.Println("Error ", err)
 	}
 	for _, d := range a {
-		fmt.Println(d.GetTime(), ": ", d.Value)
+		fmt.Println(d.TimeHuman, ": ", d.Value)
 	}
 }

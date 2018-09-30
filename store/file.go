@@ -17,8 +17,9 @@ type File struct {
 
 // HistoricalData time and quote value load from file
 type HistoricalData struct {
-	Time  int     `json:"time"`
-	Value float32 `json:"value"`
+	Time      int       `json:"time"`
+	TimeHuman time.Time `json:"timehuman"` //need to check if this can be done on the client
+	Value     float32   `json:"value"`
 }
 
 //NewFile ...
@@ -93,13 +94,13 @@ func getHistoricalData(r io.Reader) ([]HistoricalData, error) {
 			return nil, fmt.Errorf("Error parsing quote value %v", err)
 		}
 
-		a = append(a, HistoricalData{t, float32(v)})
+		a = append(a, HistoricalData{Time: t, TimeHuman: getTime(t), Value: float32(v)})
 	}
 
 	return a, nil
 }
 
 //GetTime gets the time as time format
-func (h HistoricalData) GetTime() time.Time {
-	return time.Unix(int64(h.Time), 0)
+func getTime(t int) time.Time {
+	return time.Unix(int64(t), 0)
 }
