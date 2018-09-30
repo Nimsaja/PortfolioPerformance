@@ -15,8 +15,8 @@ func TestCreatePath(t *testing.T) {
 	}
 }
 
-func checkHistoricalData(s string, t *testing.T) {
-	a, err := getHistoricalData(strings.NewReader(s))
+func checkData(s string, t *testing.T) {
+	a, err := getData(strings.NewReader(s))
 	if err != nil {
 		t.Errorf("No Error expected %v", err)
 	}
@@ -37,17 +37,17 @@ func checkHistoricalData(s string, t *testing.T) {
 	}
 }
 
-func TestGetHistoricalData(t *testing.T) {
+func TestGetData(t *testing.T) {
 	s := "1538171940, 3328.5918\n" +
 		"1538172010, 3114.1509"
 
-	checkHistoricalData(s, t)
+	checkData(s, t)
 }
 
-func TestRemoveDuplicatesFromHistoricalData(t *testing.T) {
+func TestRemoveDuplicatesFromData(t *testing.T) {
 	s := "1538171940, 3328.5918\n" +
 		"1538172010, 3114.1509\n" +
 		"1538171940, 3328.591899"
 
-	checkHistoricalData(s, t)
+	checkData(s, t)
 }
