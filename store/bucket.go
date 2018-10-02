@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"cloud.google.com/go/storage"
 	"google.golang.org/appengine/file"
@@ -38,10 +39,28 @@ func (f Bucket) Save(c context.Context, quote float32, buy float32) error {
 	bucket := client.Bucket(bucketName)
 
 	fileName := f.path
+
+	//no append in bucket files - so we need to read in the bucket values first
+	rc, err := bucket.Object(f.path).NewReader(c)
+	if err != nil {
+		return err
+	}
+	defer rc.Close()
+
+	data, err := getData(rc)
+	if err != nil {
+		return err
+	}
+
+	//append last data to list
+	t := calcStoreTime()
+	data = append(data, Data{Time: int(t), TimeHuman: time.Unix(t, 0), Value: quote, Diff: quote - buy})
+
+	//store everything into bucket
 	wc := bucket.Object(fileName).NewWriter(c)
 	wc.ContentType = "application/json"
 
-	s, err := jsonData(quote, buy)
+	s, err := convert2JSON(data)
 	if err != nil {
 		return err
 	}

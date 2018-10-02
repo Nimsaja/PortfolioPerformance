@@ -34,13 +34,3 @@ func convert2JSON(v interface{}) (string, error) {
 
 	return string(b), nil
 }
-
-func jsonData(quote, buy float32) (string, error) {
-	t := calcStoreTime()
-	data := Data{Time: int(t), TimeHuman: time.Unix(t, 0), Value: quote, Diff: quote - buy}
-	s, err := convert2JSON(data)
-	if err != nil {
-		return "", err
-	}
-	return s, nil
-}

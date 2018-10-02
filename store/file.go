@@ -1,11 +1,11 @@
 package store
 
 import (
-	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"time"
 )
@@ -32,15 +32,25 @@ func NewFile(s string) File {
 
 //Save store quote into file
 func (file File) Save(c context.Context, quote float32, buy float32) error {
-	//append to output file
-	f, err := os.OpenFile(file.path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	f, err := os.OpenFile(file.path, os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		return fmt.Errorf("Can not open file: %s, %v", file.path, err)
 	}
 
 	defer f.Close()
 
-	s, err := jsonData(quote, buy)
+	//get data from file first
+	data, err := getData(f)
+	if err != nil {
+		return err
+	}
+
+	t := calcStoreTime()
+	data = append(data, Data{Time: int(t), TimeHuman: time.Unix(t, 0), Value: quote, Diff: quote - buy})
+	s, err := convert2JSON(data)
+	if err != nil {
+		return err
+	}
 	_, err = fmt.Fprintln(f, s)
 
 	return err
@@ -60,25 +70,28 @@ func (file File) Load(c context.Context) ([]Data, error) {
 }
 
 func getData(r io.Reader) (data []Data, err error) {
-	var d Data
-	prevTimes := make(map[int]struct{})
+	// var d Data
+	// prevTimes := make(map[int]struct{})
 
-	scanner := bufio.NewScanner(r)
-	for scanner.Scan() {
-		err := json.Unmarshal([]byte(scanner.Text()), &d)
-		if err != nil {
-			return data, fmt.Errorf("Can not unmarshal json. %v", err)
-		}
+	byteValue, _ := ioutil.ReadAll(r)
+	json.Unmarshal(byteValue, &data)
 
-		//check if this time already exists in map
-		_, exists := prevTimes[d.Time]
-		if exists {
-			continue
-		}
-		prevTimes[d.Time] = struct{}{}
+	// scanner := bufio.NewScanner(r)
+	// for scanner.Scan() {
+	// 	err := json.Unmarshal([]byte(scanner.Text()), &d)
+	// 	if err != nil {
+	// 		return data, fmt.Errorf("Can not unmarshal json. %v", err)
+	// 	}
 
-		data = append(data, d)
-	}
+	// 	//check if this time already exists in map
+	// 	_, exists := prevTimes[d.Time]
+	// 	if exists {
+	// 		continue
+	// 	}
+	// 	prevTimes[d.Time] = struct{}{}
+
+	// 	data = append(data, d)
+	// }
 	return data, nil
 }
 
