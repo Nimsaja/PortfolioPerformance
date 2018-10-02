@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -15,6 +16,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"google.golang.org/appengine"
+	"google.golang.org/appengine/urlfetch"
 )
 
 // handle CORS and the OPTION method
@@ -47,16 +49,21 @@ func handler() http.Handler {
 var jasmin portfolio.Owner
 var inCloud bool
 var storage store.StorageService
+var urlService yahoo.URLService
 
 func main() {
 	inCloud, _ = strconv.ParseBool(os.Getenv("RUN_IN_CLOUD"))
 	jasmin = data.Jasmin()
 
-	//create StorageService
+	//create StorageService and urlService
 	if inCloud {
 		storage = store.NewBucket(jasmin.Name)
+		urlService = yahoo.New(func(c context.Context) *http.Client {
+			return urlfetch.Client(c)
+		})
 	} else {
 		storage = store.NewFile(jasmin.Name)
+		urlService = yahoo.Default()
 	}
 
 	http.Handle("/", handler())
@@ -69,26 +76,27 @@ func main() {
 }
 
 func loadHistData(w http.ResponseWriter, r *http.Request) {
-	qs := yahoo.GetAllQuotes(jasmin.Stocks())
-	s := fmt.Sprintf("Load Hist Data! In Cloud? %v", inCloud)
+	c := appengine.NewContext(r)
+	qs := urlService.GetAllQuotes(c, jasmin.Stocks())
 
 	//Save Values
-	err := storage.Save(appengine.NewContext(r), jasmin.GetYesterdaySum(qs), jasmin.BuySum())
+	err := storage.Save(c, jasmin.GetYesterdaySum(qs), jasmin.BuySum())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		s = err.Error()
+		writeOutAsJSON(w, err.Error())
+	} else {
+		s := fmt.Sprintf("Successfully wrote new data to storage. Sum from Yesterday: %v", jasmin.GetYesterdaySum(qs))
+		writeOutAsJSON(w, s)
 	}
-
-	writeOutAsJSON(w, s)
 }
 
 func getTableData(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
 	//need to get all quotes for the current value
-	qs := yahoo.GetAllQuotes(jasmin.Stocks())
+	qs := urlService.GetAllQuotes(c, jasmin.Stocks())
 
 	//Load Historical Data from File
-	f := store.NewFile(jasmin.Name)
-	a, err := f.Load()
+	a, err := storage.Load(c)
 	if err != nil {
 		fmt.Println("Error ", err)
 	}

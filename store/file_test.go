@@ -44,16 +44,16 @@ func checkData(s string, t *testing.T) {
 }
 
 func TestGetData(t *testing.T) {
-	s := "1538171940, 3328.5918, 200\n" +
-		"1538172010, 3114.1509, 215"
+	s := `{"time":1538171940,"value":3328.5918,"diff":200}
+	{"time":1538172010,"value":3114.1509,"diff":215}`
 
 	checkData(s, t)
 }
 
 func TestRemoveDuplicatesFromData(t *testing.T) {
-	s := "1538171940, 3328.5918, 200\n" +
-		"1538172010, 3114.1509, 215\n" +
-		"1538171940, 3328.591899, 201"
+	s := `{"time":1538171940,"value":3328.5918,"diff":200}
+	{"time":1538172010,"value":3114.1509,"diff":215}
+	{"time":1538171940,"value":3114.1509,"diff":215}`
 
 	checkData(s, t)
 }

@@ -1,6 +1,7 @@
 package yahoo
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -10,24 +11,47 @@ import (
 	"github.com/Nimsaja/PortfolioPerformance/portfolio"
 )
 
+// CreateClientFunc create a http.Client (in the cloud urlfetch.Client)
+type CreateClientFunc func(c context.Context) *http.Client
+
+// defaultClientFunc is the default, if not run in the cloud
+var defaultClientFunc = func(c context.Context) *http.Client {
+	return http.DefaultClient
+}
+
+// URLService ...
+type URLService struct {
+	client CreateClientFunc
+}
+
+// New instace of YahooService
+func New(client CreateClientFunc) URLService {
+	return URLService{client: client}
+}
+
+// Default instance of URLService
+func Default() URLService {
+	return URLService{client: defaultClientFunc}
+}
+
 var url = "https://query1.finance.yahoo.com/v7/finance/quote?lang=en-US&region=US&corsDomain=finance.yahoo.com&symbols="
 
-//GetQuote ...
-func GetQuote(s portfolio.Stock) (portfolio.Quote, error) {
-	r, err := getQuote(s.Symbol)
+//GetQuote gets single quote
+func (svc URLService) GetQuote(c context.Context, s portfolio.Stock) (portfolio.Quote, error) {
+	r, err := getQuote(svc.client(c), s.Symbol)
 
 	return portfolio.Quote{Stock: s, Close: r.Close, Price: r.Price}, err
 }
 
 //GetAllQuotes ...
-func GetAllQuotes(sl []portfolio.Stock) []portfolio.Quote {
+func (svc URLService) GetAllQuotes(c context.Context, sl []portfolio.Stock) []portfolio.Quote {
 	ql := portfolio.New(len(sl))
 
 	for _, s := range sl {
 		go func(s portfolio.Stock) {
 			defer ql.Done()
 
-			q, err := GetQuote(s)
+			q, err := svc.GetQuote(c, s)
 			if err != nil {
 				log.Printf("could not get quote for %v, %v", s.Name, err)
 			}
@@ -39,12 +63,12 @@ func GetAllQuotes(sl []portfolio.Stock) []portfolio.Quote {
 	return ql.Wait()
 }
 
-func getQuote(s string) (Result, error) {
+func getQuote(client *http.Client, s string) (Result, error) {
 	var result Result
 
 	u := fmt.Sprintf(url+"%v", s)
 
-	resp, err := http.Get(u)
+	resp, err := client.Get(u)
 	if err != nil {
 		return result, fmt.Errorf("Error during http.Get(%v): %v", u, err)
 	}

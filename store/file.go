@@ -3,11 +3,10 @@ package store
 import (
 	"bufio"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
-	"strconv"
-	"strings"
 	"time"
 )
 
@@ -33,7 +32,6 @@ func NewFile(s string) File {
 
 //Save store quote into file
 func (file File) Save(c context.Context, quote float32, buy float32) error {
-	fmt.Println("Save into file", file.path)
 	//append to output file
 	f, err := os.OpenFile(file.path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
@@ -42,14 +40,14 @@ func (file File) Save(c context.Context, quote float32, buy float32) error {
 
 	defer f.Close()
 
-	s := fmt.Sprintf("%v, %v, %v", calcStoreTime(), quote, quote-buy)
+	s, err := jsonData(quote, buy)
 	_, err = fmt.Fprintln(f, s)
 
 	return err
 }
 
 //Load ...
-func (file File) Load() ([]Data, error) {
+func (file File) Load(c context.Context) ([]Data, error) {
 	//read in file
 	f, err := os.OpenFile(file.path, os.O_RDWR, 0600)
 	if err != nil {
@@ -61,47 +59,27 @@ func (file File) Load() ([]Data, error) {
 	return getData(f)
 }
 
-func getData(r io.Reader) ([]Data, error) {
-	a := make([]Data, 0)
-	var s []string
-	var v float64
-	var d float64
+func getData(r io.Reader) (data []Data, err error) {
+	var d Data
 	prevTimes := make(map[int]struct{})
 
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
-		b := scanner.Text()
-		s = strings.Split(b, ", ")
-
-		//get time
-		t, err := strconv.Atoi(s[0])
+		err := json.Unmarshal([]byte(scanner.Text()), &d)
 		if err != nil {
-			return nil, fmt.Errorf("Error parsing time %v", err)
+			return data, fmt.Errorf("Can not unmarshal json. %v", err)
 		}
 
 		//check if this time already exists in map
-		_, exists := prevTimes[t]
+		_, exists := prevTimes[d.Time]
 		if exists {
 			continue
 		}
-		prevTimes[t] = struct{}{}
+		prevTimes[d.Time] = struct{}{}
 
-		//get value
-		v, err = strconv.ParseFloat(s[1], 32)
-		if err != nil {
-			return nil, fmt.Errorf("Error parsing quote value %v", err)
-		}
-
-		//get diff
-		d, err = strconv.ParseFloat(s[2], 32)
-		if err != nil {
-			return nil, fmt.Errorf("Error parsing quote diff %v", err)
-		}
-
-		a = append(a, Data{Time: t, TimeHuman: getTime(t), Value: float32(v), Diff: float32(d)})
+		data = append(data, d)
 	}
-
-	return a, nil
+	return data, nil
 }
 
 //GetTime gets the time as time format

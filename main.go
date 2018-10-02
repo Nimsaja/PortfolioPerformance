@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -14,7 +15,7 @@ func main() {
 	jasmin := data.Jasmin()
 
 	start := time.Now()
-	qs := yahoo.GetAllQuotes(jasmin.Stocks())
+	qs := yahoo.Default().GetAllQuotes(context.TODO(), jasmin.Stocks())
 	fmt.Println("Elapsed time: ", time.Now().Sub(start))
 
 	fmt.Println("Quotes Today/Yesterday: ", jasmin.GetTodaySum(qs), jasmin.GetYesterdaySum(qs))
@@ -22,10 +23,10 @@ func main() {
 
 	//Save Values
 	f := store.NewFile(jasmin.Name)
-	f.Save(jasmin.GetYesterdaySum(qs), jasmin.BuySum())
+	f.Save(context.TODO(), jasmin.GetYesterdaySum(qs), jasmin.BuySum())
 
 	//Load Values
-	a, err := f.Load()
+	a, err := f.Load(context.TODO())
 	if err != nil {
 		fmt.Println("Error ", err)
 	}

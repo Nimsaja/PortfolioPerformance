@@ -1,15 +1,19 @@
 package yahoo
 
 import (
+	"context"
 	"testing"
 
 	"github.com/Nimsaja/PortfolioPerformance/portfolio"
 )
 
+var svc = Default()
+var c = context.TODO()
+
 func TestGetQuote(t *testing.T) {
 	s := portfolio.Stock{Name: "Google", Symbol: "ABEC.DE"}
 
-	q, err := GetQuote(s)
+	q, err := svc.GetQuote(c, s)
 
 	if err != nil {
 		t.Errorf("No error expected %v", err)
@@ -20,7 +24,7 @@ func TestGetQuote(t *testing.T) {
 	}
 }
 func TestPrivateGetQuote(t *testing.T) {
-	r, _ := getQuote("ABEC.DE")
+	r, _ := getQuote(svc.client(c), "ABEC.DE")
 
 	if r.Name != "Alphabet Inc." {
 		t.Errorf("Name of stock should be %v. Got %v.", "Alphabet Inc.", r.Name)
@@ -34,7 +38,7 @@ func TestGetAllQuotes(t *testing.T) {
 	google := portfolio.Stock{Name: "Google", Symbol: "ABEC.DE"}
 	amazon := portfolio.Stock{Name: "Amazon", Symbol: "AMZ.DE"}
 
-	ql := GetAllQuotes([]portfolio.Stock{google, amazon})
+	ql := svc.GetAllQuotes(c, []portfolio.Stock{google, amazon})
 
 	if len(ql) != 2 {
 		t.Errorf("Expected a length of %v, got %v", 2, len(ql))

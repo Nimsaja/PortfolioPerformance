@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"cloud.google.com/go/storage"
 	"google.golang.org/appengine/file"
@@ -38,9 +39,14 @@ func (f Bucket) Save(c context.Context, quote float32, buy float32) error {
 
 	fileName := f.path
 	wc := bucket.Object(fileName).NewWriter(c)
-	wc.ContentType = "text/plain"
+	wc.ContentType = "application/json"
 
-	if _, err := wc.Write([]byte("Yeah, I am writing to a bucket :-D")); err != nil {
+	s, err := jsonData(quote, buy)
+	if err != nil {
+		return err
+	}
+
+	if _, err := wc.Write([]byte(s)); err != nil {
 		return fmt.Errorf("createFile: unable to write data to bucket %v, file %q: %v", bucket, fileName, err)
 	}
 
@@ -49,4 +55,31 @@ func (f Bucket) Save(c context.Context, quote float32, buy float32) error {
 	}
 
 	return nil
+}
+
+//Load loads values from bucket
+func (f Bucket) Load(c context.Context) ([]Data, error) {
+	// determine default bucket name
+	bucketName, err := file.DefaultBucketName(c)
+	if err != nil {
+		log.Fatalf("failed to get default GCS bucket name: %v", err)
+		return nil, err
+	}
+
+	client, err := storage.NewClient(c)
+	if err != nil {
+		log.Fatalf("failed to get default GCS bucket name: %v", err)
+		return nil, err
+	}
+	defer client.Close()
+
+	bucket := client.Bucket(bucketName)
+
+	rc, err := bucket.Object(f.path).NewReader(c)
+	if err != nil {
+		return nil, err
+	}
+	defer rc.Close()
+
+	return getData(rc)
 }

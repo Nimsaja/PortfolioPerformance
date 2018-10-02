@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -31,7 +32,17 @@ func TestForceCall(t *testing.T) {
 		t.Errorf("expected status ok (200), but is: %v", resp.StatusCode)
 	}
 
-	//is there anything I can check here?!?
+	// check result
+	body, _ := ioutil.ReadAll(resp.Body)
+	s := ""
+	err := json.Unmarshal(body, &s)
+	if err != nil {
+		t.Errorf("No err expected: %v", err)
+	}
+
+	if !strings.HasPrefix(s, "Successfully") {
+		t.Errorf("Expected a success string, got %v", s)
+	}
 }
 
 func TestGetTableData(t *testing.T) {
