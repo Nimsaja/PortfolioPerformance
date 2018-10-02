@@ -21,13 +21,11 @@ func getXYData(data []store.Data, valueToday, buySum float32) (x []int, y []floa
 	ydiff = make([]float32, len(data)+1)
 
 	for i, d := range data {
-		fmt.Println("add data time ", d.Time)
 		x[i] = d.Time
 		y[i] = d.Value
-		ydiff[i] = d.Value - buySum
+		ydiff[i] = d.Diff
 	}
 
-	fmt.Println("add cur time ", int(time.Now().Unix()))
 	x[len(data)] = int(time.Now().Unix())
 	y[len(data)] = valueToday
 	ydiff[len(data)] = valueToday - buySum

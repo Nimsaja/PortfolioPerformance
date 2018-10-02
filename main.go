@@ -22,7 +22,7 @@ func main() {
 
 	//Save Values
 	f := store.NewFile(jasmin.Name)
-	f.Save(jasmin.GetYesterdaySum(qs))
+	f.Save(jasmin.GetYesterdaySum(qs), jasmin.BuySum())
 
 	//Load Values
 	a, err := f.Load()
@@ -30,7 +30,7 @@ func main() {
 		fmt.Println("Error ", err)
 	}
 	for _, d := range a {
-		fmt.Println(d.TimeHuman, ": ", d.Value)
+		fmt.Println(d.TimeHuman, ": ", d.Value, ", ", d.Diff)
 	}
 
 	plot.Create(a, jasmin.GetTodaySum(qs), jasmin.BuySum())

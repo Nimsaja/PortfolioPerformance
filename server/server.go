@@ -59,7 +59,7 @@ func loadHistData(w http.ResponseWriter, r *http.Request) {
 
 	//Save Values
 	f := store.NewFile(jasmin.Name)
-	f.Save(jasmin.GetYesterdaySum(qs))
+	f.Save(jasmin.GetYesterdaySum(qs), jasmin.BuySum())
 }
 
 func getTableData(w http.ResponseWriter, r *http.Request) {
@@ -74,7 +74,7 @@ func getTableData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//add current value
-	d := store.Data{TimeHuman: time.Now(), Value: jasmin.GetTodaySum(qs)}
+	d := store.Data{TimeHuman: time.Now(), Value: jasmin.GetTodaySum(qs), Diff: jasmin.GetTodaySum(qs) - jasmin.BuySum()}
 	a = append(a, d)
 
 	writeOutAsJSON(w, a)
