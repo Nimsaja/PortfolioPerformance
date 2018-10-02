@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/Nimsaja/PortfolioPerformance/data"
@@ -43,23 +45,41 @@ func handler() http.Handler {
 }
 
 var jasmin portfolio.Owner
+var inCloud bool
+var storage store.StorageService
 
 func main() {
+	inCloud, _ = strconv.ParseBool(os.Getenv("RUN_IN_CLOUD"))
 	jasmin = data.Jasmin()
+
+	//create StorageService
+	if inCloud {
+		storage = store.NewBucket(jasmin.Name)
+	} else {
+		storage = store.NewFile(jasmin.Name)
+	}
 
 	http.Handle("/", handler())
 
-	fmt.Println("*******Open http://localhost:8080/portfolio/table*******")
-	fmt.Println()
+	if !inCloud {
+		fmt.Println("*******Open http://localhost:8080/portfolio/table*******")
+		fmt.Println()
+	}
 	appengine.Main()
 }
 
 func loadHistData(w http.ResponseWriter, r *http.Request) {
 	qs := yahoo.GetAllQuotes(jasmin.Stocks())
+	s := fmt.Sprintf("Load Hist Data! In Cloud? %v", inCloud)
 
 	//Save Values
-	f := store.NewFile(jasmin.Name)
-	f.Save(jasmin.GetYesterdaySum(qs), jasmin.BuySum())
+	err := storage.Save(appengine.NewContext(r), jasmin.GetYesterdaySum(qs), jasmin.BuySum())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		s = err.Error()
+	}
+
+	writeOutAsJSON(w, s)
 }
 
 func getTableData(w http.ResponseWriter, r *http.Request) {

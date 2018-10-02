@@ -2,6 +2,7 @@ package store
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -30,14 +31,9 @@ func NewFile(s string) File {
 	}
 }
 
-func createPath(s string) string {
-	path := strings.Replace(s, " ", "", -1)
-	path = strings.ToLower(path)
-	return path + ".txt"
-}
-
 //Save store quote into file
-func (file File) Save(quote float32, buy float32) error {
+func (file File) Save(c context.Context, quote float32, buy float32) error {
+	fmt.Println("Save into file", file.path)
 	//append to output file
 	f, err := os.OpenFile(file.path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {

@@ -1,0 +1,14 @@
+# env: flex
+# runtime: go
+# https://cloud.google.com/appengine/docs/standard/go/config/appref
+
+runtime: go
+api_version: go1
+
+handlers:
+- url: /.*
+  script: _go_app
+
+env_variables:
+  RUN_IN_CLOUD: 'TRUE'
+

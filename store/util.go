@@ -2,6 +2,7 @@ package store
 
 import (
 	"log"
+	"strings"
 	"time"
 )
 
@@ -15,4 +16,10 @@ func calcStoreTime() int64 {
 	d = time.Date(d.Year(), d.Month(), d.Day(), 23, 59, 0, 0, l)
 
 	return d.Unix()
+}
+
+func createPath(s string) string {
+	path := strings.Replace(s, " ", "", -1)
+	path = strings.ToLower(path)
+	return path + ".txt"
 }
