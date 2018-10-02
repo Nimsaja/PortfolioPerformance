@@ -70,28 +70,21 @@ func (file File) Load(c context.Context) ([]Data, error) {
 }
 
 func getData(r io.Reader) (data []Data, err error) {
-	// var d Data
-	// prevTimes := make(map[int]struct{})
-
 	byteValue, _ := ioutil.ReadAll(r)
-	json.Unmarshal(byteValue, &data)
+	var res []Data
+	json.Unmarshal(byteValue, &res)
 
-	// scanner := bufio.NewScanner(r)
-	// for scanner.Scan() {
-	// 	err := json.Unmarshal([]byte(scanner.Text()), &d)
-	// 	if err != nil {
-	// 		return data, fmt.Errorf("Can not unmarshal json. %v", err)
-	// 	}
+	prevTimes := make(map[int]struct{})
+	for _, d := range res {
+		//check if this time already exists in map
+		_, exists := prevTimes[d.Time]
+		if exists {
+			continue
+		}
+		prevTimes[d.Time] = struct{}{}
 
-	// 	//check if this time already exists in map
-	// 	_, exists := prevTimes[d.Time]
-	// 	if exists {
-	// 		continue
-	// 	}
-	// 	prevTimes[d.Time] = struct{}{}
-
-	// 	data = append(data, d)
-	// }
+		data = append(data, d)
+	}
 	return data, nil
 }
 
