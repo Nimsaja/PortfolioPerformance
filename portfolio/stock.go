@@ -66,6 +66,11 @@ func (ql *QuoteList) Done() {
 // and create sum today and yesterday
 func (ql *QuoteList) Wait() []Quote {
 	res := make([]Quote, 0)
+
+	if ql.cap == 0 {
+		return res
+	}
+
 	for q := range ql.ql {
 		res = append(res, q)
 	}
