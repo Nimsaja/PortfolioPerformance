@@ -44,20 +44,33 @@ func handler() http.Handler {
 	return corsAndOptionHandler(router)
 }
 
+// App ...
+type App struct {
+	storage    store.StorageService
+	urlService yahoo.URLService
+}
+
+func inCloud() bool {
+	b, _ := strconv.ParseBool(os.Getenv("RUN_IN_CLOUD"))
+	return b
+}
+
+// New creates new App with services
+func New() App {
+	inCloud := inCloud()
+	return App{store.New(inCloud, jasmin.Name), yahoo.New(inCloud)}
+}
+
 var jasmin portfolio.Owner
-var inCloud bool
-var storage store.StorageService
-var urlService yahoo.URLService
+var app App
 
 func main() {
-	inCloud, _ = strconv.ParseBool(os.Getenv("RUN_IN_CLOUD"))
 	jasmin = data.Jasmin()
-	storage = store.New(inCloud, jasmin.Name)
-	urlService = yahoo.New(inCloud)
+	app = New()
 
 	http.Handle("/", handler())
 
-	if !inCloud {
+	if !inCloud() {
 		fmt.Println("*******Open http://localhost:8080/portfolio/table*******")
 		fmt.Println()
 	}
@@ -66,10 +79,10 @@ func main() {
 
 func loadHistData(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	qs := urlService.GetAllQuotes(c, jasmin.Stocks())
+	qs := app.urlService.GetAllQuotes(c, jasmin.Stocks())
 
 	//Save Values
-	err := storage.Save(c, jasmin.GetYesterdaySum(qs), jasmin.BuySum())
+	err := app.storage.Save(c, jasmin.GetYesterdaySum(qs), jasmin.BuySum())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		writeOutAsJSON(w, err.Error())
@@ -82,10 +95,10 @@ func loadHistData(w http.ResponseWriter, r *http.Request) {
 func getTableData(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	//need to get all quotes for the current value
-	qs := urlService.GetAllQuotes(c, jasmin.Stocks())
+	qs := app.urlService.GetAllQuotes(c, jasmin.Stocks())
 
 	//Load Historical Data from File
-	a, err := storage.Load(c)
+	a, err := app.storage.Load(c)
 	if err != nil {
 		fmt.Println("Error ", err)
 	}
