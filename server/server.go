@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -16,7 +15,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"google.golang.org/appengine"
-	"google.golang.org/appengine/urlfetch"
 )
 
 // handle CORS and the OPTION method
@@ -54,17 +52,8 @@ var urlService yahoo.URLService
 func main() {
 	inCloud, _ = strconv.ParseBool(os.Getenv("RUN_IN_CLOUD"))
 	jasmin = data.Jasmin()
-
-	//create StorageService and urlService
-	if inCloud {
-		storage = store.NewBucket(jasmin.Name)
-		urlService = yahoo.New(func(c context.Context) *http.Client {
-			return urlfetch.Client(c)
-		})
-	} else {
-		storage = store.NewFile(jasmin.Name)
-		urlService = yahoo.Default()
-	}
+	storage = store.New(inCloud, jasmin.Name)
+	urlService = yahoo.New(inCloud)
 
 	http.Handle("/", handler())
 

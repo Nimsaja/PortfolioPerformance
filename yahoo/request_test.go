@@ -7,7 +7,7 @@ import (
 	"github.com/Nimsaja/PortfolioPerformance/portfolio"
 )
 
-var svc = Default()
+var svc = New(false)
 var c = context.TODO()
 
 func TestGetQuote(t *testing.T) {

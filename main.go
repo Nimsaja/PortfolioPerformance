@@ -15,14 +15,15 @@ func main() {
 	jasmin := data.Jasmin()
 
 	start := time.Now()
-	qs := yahoo.Default().GetAllQuotes(context.TODO(), jasmin.Stocks())
+	urlServ := yahoo.New(false)
+	qs := urlServ.GetAllQuotes(context.TODO(), jasmin.Stocks())
 	fmt.Println("Elapsed time: ", time.Now().Sub(start))
 
 	fmt.Println("Quotes Today/Yesterday: ", jasmin.GetTodaySum(qs), jasmin.GetYesterdaySum(qs))
 	fmt.Println("Diffs Today/Yesterday: ", jasmin.GetTodaySum(qs)-jasmin.BuySum(), jasmin.GetYesterdaySum(qs)-jasmin.BuySum())
 
 	//Save Values
-	f := store.NewFile(jasmin.Name)
+	f := store.New(false, jasmin.Name)
 	f.Save(context.TODO(), jasmin.GetYesterdaySum(qs), jasmin.BuySum())
 
 	//Load Values

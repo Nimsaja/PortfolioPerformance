@@ -15,13 +15,6 @@ type Bucket struct {
 	path string
 }
 
-//NewBucket new bucket with path
-func NewBucket(s string) Bucket {
-	return Bucket{
-		path: createPath(s),
-	}
-}
-
 //Save saves values to bucket
 func (f Bucket) Save(c context.Context, quote float32, buy float32) error {
 	//determine default bucket name

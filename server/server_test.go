@@ -23,7 +23,7 @@ func init() {
 	jasmin = data.Jasmin()
 }
 
-func TestForceCall(t *testing.T) {
+func estForceCall(t *testing.T) {
 	r := httptest.NewRequest("GET", "http://localhost:8080/portfolio/forcecall", nil)
 	w := httptest.NewRecorder()
 	loadHistData(w, r)
@@ -47,7 +47,7 @@ func TestForceCall(t *testing.T) {
 	}
 }
 
-func TestGetTableData(t *testing.T) {
+func estGetTableData(t *testing.T) {
 	r := httptest.NewRequest("GET", "http://localhost:8080/portfolio/table", nil)
 	w := httptest.NewRecorder()
 	getTableData(w, r)
