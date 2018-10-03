@@ -21,9 +21,10 @@ var (
 func init() {
 	os.Setenv("RUN_IN_CLOUD", "NotSet")
 	jasmin = data.Jasmin()
+	app = New()
 }
 
-func estForceCall(t *testing.T) {
+func TestForceCall(t *testing.T) {
 	r := httptest.NewRequest("GET", "http://localhost:8080/portfolio/forcecall", nil)
 	w := httptest.NewRecorder()
 	loadHistData(w, r)
@@ -47,7 +48,7 @@ func estForceCall(t *testing.T) {
 	}
 }
 
-func estGetTableData(t *testing.T) {
+func TestGetTableData(t *testing.T) {
 	r := httptest.NewRequest("GET", "http://localhost:8080/portfolio/table", nil)
 	w := httptest.NewRecorder()
 	getTableData(w, r)
