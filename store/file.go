@@ -23,13 +23,6 @@ type Data struct {
 	Diff      float32   `json:"diff"`
 }
 
-//NewFile ...
-func NewFile(s string) File {
-	return File{
-		path: createPath(s),
-	}
-}
-
 //Save store quote into file
 func (file File) Save(c context.Context, quote float32, buy float32) error {
 	f, err := os.OpenFile(file.path, os.O_WRONLY|os.O_CREATE, 0600)

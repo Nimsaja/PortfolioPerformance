@@ -9,29 +9,30 @@ import (
 	"net/http"
 
 	"github.com/Nimsaja/PortfolioPerformance/portfolio"
+	"google.golang.org/appengine/urlfetch"
 )
 
-// CreateClientFunc create a http.Client (in the cloud urlfetch.Client)
-type CreateClientFunc func(c context.Context) *http.Client
-
-// defaultClientFunc is the default, if not run in the cloud
-var defaultClientFunc = func(c context.Context) *http.Client {
-	return http.DefaultClient
-}
+// createClientFunc create a http.Client (in the cloud urlfetch.Client)
+type createClientFunc func(c context.Context) *http.Client
 
 // URLService ...
 type URLService struct {
-	client CreateClientFunc
+	client createClientFunc
 }
 
-// New instace of YahooService
-func New(client CreateClientFunc) URLService {
-	return URLService{client: client}
-}
-
-// Default instance of URLService
-func Default() URLService {
-	return URLService{client: defaultClientFunc}
+//New factory to create URLService
+func New(inCloud bool) URLService {
+	var s URLService
+	if inCloud {
+		s = URLService{client: func(c context.Context) *http.Client {
+			return urlfetch.Client(c)
+		}}
+	} else {
+		s = URLService{client: func(_ context.Context) *http.Client {
+			return http.DefaultClient
+		}}
+	}
+	return s
 }
 
 var url = "https://query1.finance.yahoo.com/v7/finance/quote?lang=en-US&region=US&corsDomain=finance.yahoo.com&symbols="

@@ -79,3 +79,12 @@ func TestDoneAndWait(t *testing.T) {
 		t.Errorf("Expected length of %v, got %v", 2, len(quotes))
 	}
 }
+
+func TestWait4EmptyChannel(t *testing.T) {
+	ql := New(0)
+
+	a := ql.Wait()
+	if len(a) != 0 {
+		t.Errorf("Expected a quote array length of 0, got %v", len(a))
+	}
+}
