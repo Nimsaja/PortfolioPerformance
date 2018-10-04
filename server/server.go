@@ -36,7 +36,9 @@ func corsAndOptionHandler(h http.Handler) http.HandlerFunc {
 func handler() http.Handler {
 	router := mux.NewRouter()
 
-	url := "/portfolio/forcecall"
+	router.Handle("/", http.RedirectHandler("/portfolio/table", http.StatusFound))
+
+	url := "/portfolio/hist"
 	router.HandleFunc(url, loadHistData).Methods("GET")
 	url = "/portfolio/table"
 	router.HandleFunc(url, getTableData).Methods("GET")

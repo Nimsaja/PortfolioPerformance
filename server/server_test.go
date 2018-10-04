@@ -25,7 +25,7 @@ func init() {
 }
 
 func TestForceCall(t *testing.T) {
-	r := httptest.NewRequest("GET", "http://localhost:8080/portfolio/forcecall", nil)
+	r := httptest.NewRequest("GET", "http://localhost:8080/portfolio/hist", nil)
 	w := httptest.NewRecorder()
 	loadHistData(w, r)
 

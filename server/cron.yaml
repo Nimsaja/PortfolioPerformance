@@ -1,0 +1,5 @@
+cron:
+- description: "fetch data from yesterday and store to bucket"
+  url: /portfolio/hist
+  schedule: every day 06:00
+  timezone: Europe/Berlin
