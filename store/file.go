@@ -67,17 +67,17 @@ func getData(r io.Reader) (data []Data, err error) {
 	var res []Data
 	json.Unmarshal(byteValue, &res)
 
-	prevTimes := make(map[int]struct{})
+	//overwrite data if time already exists
+	prevTimes := make(map[int]Data)
 	for _, d := range res {
-		//check if this time already exists in map
-		_, exists := prevTimes[d.Time]
-		if exists {
-			continue
-		}
-		prevTimes[d.Time] = struct{}{}
-
-		data = append(data, d)
+		prevTimes[d.Time] = d
 	}
+
+	//store values in array
+	for _, v := range prevTimes {
+		data = append(data, v)
+	}
+
 	return data, nil
 }
 

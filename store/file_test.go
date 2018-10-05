@@ -50,10 +50,10 @@ func TestGetData(t *testing.T) {
 	checkData(s, t)
 }
 
-func TestRemoveDuplicatesFromData(t *testing.T) {
-	s := `[{"time":1538171940,"value":3328.5918,"diff":200},
+func TestRemovePreviousDuplicatesFromData(t *testing.T) {
+	s := `[{"time":1538171940,"value":3114.1509,"diff":215},
 	{"time":1538172010,"value":3114.1509,"diff":215},
-	{"time":1538171940,"value":3114.1509,"diff":215}]`
+	{"time":1538171940,"value":3328.5918,"diff":200}]`
 
 	checkData(s, t)
 }
