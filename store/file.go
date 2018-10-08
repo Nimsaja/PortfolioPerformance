@@ -26,7 +26,7 @@ type Data struct {
 
 //Save store quote into file
 func (file File) Save(c context.Context, quote float32, buy float32) error {
-	f, err := os.OpenFile(file.path, os.O_WRONLY|os.O_CREATE, 0600)
+	f, err := os.OpenFile(file.path, os.O_RDONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("Can not open file: %s, %v", file.path, err)
 	}
@@ -45,7 +45,10 @@ func (file File) Save(c context.Context, quote float32, buy float32) error {
 	if err != nil {
 		return err
 	}
-	_, err = fmt.Fprintln(f, s)
+	err = ioutil.WriteFile(file.path, []byte(s), 0644)
+	if err != nil {
+		return err
+	}
 
 	return err
 }
@@ -53,7 +56,7 @@ func (file File) Save(c context.Context, quote float32, buy float32) error {
 //Load ...
 func (file File) Load(c context.Context) ([]Data, error) {
 	//read in file
-	f, err := os.OpenFile(file.path, os.O_RDWR, 0600)
+	f, err := os.OpenFile(file.path, os.O_RDONLY, 0600)
 	if err != nil {
 		return nil, fmt.Errorf("Can not open file: %s, %v", file.path, err)
 	}
