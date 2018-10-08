@@ -57,3 +57,29 @@ func TestRemovePreviousDuplicatesFromData(t *testing.T) {
 
 	checkData(s, t)
 }
+
+func TestStoreValuesInSortedArray(t *testing.T) {
+	s := []Data{{Time: 1538431140, Value: 3798.3943, Diff: 100.001},
+		{Time: 1538517540, Value: 3798.3943, Diff: 100.002},
+		{Time: 1538863140, Value: 3704.2249, Diff: 100.006},
+		{Time: 1538603940, Value: 3797.939, Diff: 100.003},
+		{Time: 1538690340, Value: 3704.2249, Diff: 100.004},
+		{Time: 1538776740, Value: 3704.2249, Diff: 100.005},
+		{Time: 1538949540, Value: 3704.2249, Diff: 100.007}}
+
+	times := make(map[int]Data, 7)
+	for _, d := range s {
+		times[d.Time] = d
+	}
+
+	data := storeValuesInSortedArray(times)
+
+	var c float32
+	for i := 0; i < 7; i++ {
+		c = float32(i+1)/1000.0 + 100
+
+		if data[i].Diff != c {
+			t.Errorf("Expected diff of %v, got %v ", c, data[i].Diff)
+		}
+	}
+}
