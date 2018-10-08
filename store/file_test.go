@@ -57,3 +57,27 @@ func TestRemovePreviousDuplicatesFromData(t *testing.T) {
 
 	checkData(s, t)
 }
+
+func TestSortedDataArray(t *testing.T) {
+	s := `[{"time":1538690340,"timehuman":"2018-10-04T21:59:00Z","value":3704.2249,"diff":100.004},
+	{"time":1538949540,"timehuman":"2018-10-07T21:59:00Z","value":3593.6108,"diff":100.007},
+	{"time":1538603940,"timehuman":"2018-10-03T21:59:00Z","value":3797.939,"diff":100.003},
+	{"time":1538863140,"timehuman":"2018-10-06T21:59:00Z","value":3704.2249,"diff":100.006},
+	{"time":1538776740,"timehuman":"2018-10-05T21:59:00Z","value":3704.2249,"diff":100.005},
+	{"time":1538517540,"timehuman":"2018-10-02T21:59:00Z","value":3798.3943,"diff":100.002},
+	{"time":1538431140,"timehuman":"2018-10-01T21:59:00Z","value":3798.3943,"diff":100.001}]`
+
+	a, err := getData(strings.NewReader(s))
+	if err != nil {
+		t.Errorf("No Error expected %v", err)
+	}
+
+	var c float32
+	for i := 0; i < 7; i++ {
+		c = float32(i+1)/1000.0 + 100
+
+		if a[i].Diff != c {
+			t.Errorf("Expected diff of %v, got %v ", c, a[i].Diff)
+		}
+	}
+}

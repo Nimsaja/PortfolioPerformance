@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"sort"
 	"time"
 )
 
@@ -77,6 +78,9 @@ func getData(r io.Reader) (data []Data, err error) {
 	for _, v := range prevTimes {
 		data = append(data, v)
 	}
+
+	//sort by time
+	sort.Slice(data, func(i, j int) bool { return data[i].Time < data[j].Time })
 
 	return data, nil
 }
