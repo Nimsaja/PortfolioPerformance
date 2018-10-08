@@ -7,7 +7,6 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"sort"
 	"time"
 )
 
@@ -74,27 +73,15 @@ func getData(r io.Reader) (data []Data, err error) {
 		prevTimes[d.Time] = d
 	}
 
-	return storeValuesInSortedArray(prevTimes), nil
+	//store values in array
+	for _, v := range prevTimes {
+		data = append(data, v)
+	}
+
+	return data, nil
 }
 
 //GetTime gets the time as time format
 func getTime(t int) time.Time {
 	return time.Unix(int64(t), 0)
-}
-
-func storeValuesInSortedArray(times map[int]Data) (data []Data) {
-	//sort keys
-	timeArray := make([]int, len(times))
-	i := 0
-	for t := range times {
-		timeArray[i] = t
-		i++
-	}
-	sort.Ints(timeArray)
-
-	//store values in array
-	for _, t := range timeArray {
-		data = append(data, times[t])
-	}
-	return data
 }
