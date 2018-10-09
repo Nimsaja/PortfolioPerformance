@@ -84,7 +84,6 @@ func getData(r io.Reader) (data []Data, err error) {
 
 	//sort by time
 	sort.Slice(data, func(i, j int) bool { return data[i].Time < data[j].Time })
-
 	return data, nil
 }
 
