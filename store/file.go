@@ -86,8 +86,3 @@ func getData(r io.Reader) (data []Data, err error) {
 	sort.Slice(data, func(i, j int) bool { return data[i].Time < data[j].Time })
 	return data, nil
 }
-
-//GetTime gets the time as time format
-func getTime(t int) time.Time {
-	return time.Unix(int64(t), 0)
-}
