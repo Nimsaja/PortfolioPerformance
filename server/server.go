@@ -84,7 +84,7 @@ func loadHistData(w http.ResponseWriter, r *http.Request) {
 	qs := app.urlService.GetAllQuotes(c, jasmin.Stocks())
 
 	//Save Values
-	err := app.storage.Save(c, jasmin.GetYesterdaySum(qs), jasmin.BuySum())
+	err := app.storage.Save(c, jasmin.GetYesterdaySum(qs), jasmin.BuySum(), jasmin.RegularMarketTime(qs))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		writeOutAsJSON(w, err.Error())
@@ -106,7 +106,8 @@ func getTableData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//add current value
-	d := store.Data{TimeHuman: time.Now(), Value: jasmin.GetTodaySum(qs), Diff: jasmin.GetTodaySum(qs) - jasmin.BuySum()}
+	t := jasmin.RegularMarketTime(qs)
+	d := store.Data{Time: int(t), TimeHuman: time.Unix(t, 0), Value: jasmin.GetTodaySum(qs), Diff: jasmin.GetTodaySum(qs) - jasmin.BuySum()}
 	a = append(a, d)
 
 	writeOutAsJSON(w, a)

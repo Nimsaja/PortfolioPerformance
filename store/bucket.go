@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"time"
 
 	"cloud.google.com/go/storage"
 	"google.golang.org/appengine/file"
@@ -16,7 +15,7 @@ type Bucket struct {
 }
 
 //Save saves values to bucket
-func (f Bucket) Save(c context.Context, quote float32, buy float32) error {
+func (f Bucket) Save(c context.Context, quote float32, buy float32, regMTime int64) error {
 	//determine default bucket name
 	bucketName, err := file.DefaultBucketName(c)
 	if err != nil {
@@ -45,15 +44,13 @@ func (f Bucket) Save(c context.Context, quote float32, buy float32) error {
 		return err
 	}
 
-	//append last data to list
-	t := calcStoreTime()
-	data = append(data, Data{Time: int(t), TimeHuman: time.Unix(t, 0), Value: quote, Diff: quote - buy})
+	newData := appendToList(data, Data{Value: quote, Diff: quote - buy}, regMTime)
 
 	//store everything into bucket
 	wc := bucket.Object(fileName).NewWriter(c)
 	wc.ContentType = "application/json"
 
-	s, err := convert2JSON(data)
+	s, err := convert2JSON(newData)
 	if err != nil {
 		return err
 	}

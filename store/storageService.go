@@ -6,7 +6,7 @@ import (
 
 //StorageService interface
 type StorageService interface {
-	Save(c context.Context, quote float32, buy float32) error
+	Save(c context.Context, quote float32, buy float32, time int64) error
 	Load(c context.Context) ([]Data, error)
 }
 

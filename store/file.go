@@ -7,7 +7,6 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"sort"
 	"time"
 )
 
@@ -25,7 +24,7 @@ type Data struct {
 }
 
 //Save store quote into file
-func (file File) Save(c context.Context, quote float32, buy float32) error {
+func (file File) Save(c context.Context, quote float32, buy float32, regMTime int64) error {
 	f, err := os.OpenFile(file.path, os.O_RDONLY, 0600)
 	if err != nil {
 		return fmt.Errorf("Can not open file: %s, %v", file.path, err)
@@ -39,9 +38,9 @@ func (file File) Save(c context.Context, quote float32, buy float32) error {
 		return err
 	}
 
-	t := calcStoreTime()
-	data = append(data, Data{Time: int(t), TimeHuman: time.Unix(t, 0), Value: quote, Diff: quote - buy})
-	s, err := convert2JSON(data)
+	newData := appendToList(data, Data{Value: quote, Diff: quote - buy}, regMTime)
+
+	s, err := convert2JSON(newData)
 	if err != nil {
 		return err
 	}
@@ -66,23 +65,31 @@ func (file File) Load(c context.Context) ([]Data, error) {
 	return getData(f)
 }
 
-func getData(r io.Reader) (data []Data, err error) {
+//append last data to list - override if we have already this date in the list
+func appendToList(data []Data, d Data, regMTime int64) []Data {
+	//closure date
+	t := calcStoreTime(regMTime)
+
+	d.Time = int(t.Unix())
+	d.TimeHuman = t
+
+	a := make([]Data, len(data))
+	copy(a, data)
+
+	//check if this is already in list, can only be the last element -> override the values
+	if a[len(a)-1].TimeHuman.Day() == t.Day() {
+		a[len(a)-1] = d
+	} else {
+		a = append(a, d)
+	}
+
+	return a
+}
+
+func getData(r io.Reader) ([]Data, error) {
 	byteValue, _ := ioutil.ReadAll(r)
 	var res []Data
 	json.Unmarshal(byteValue, &res)
 
-	//overwrite data if time already exists
-	prevTimes := make(map[int]Data)
-	for _, d := range res {
-		prevTimes[d.Time] = d
-	}
-
-	//store values in array
-	for _, v := range prevTimes {
-		data = append(data, v)
-	}
-
-	//sort by time
-	sort.Slice(data, func(i, j int) bool { return data[i].Time < data[j].Time })
-	return data, nil
+	return res, nil
 }

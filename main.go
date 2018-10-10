@@ -24,7 +24,7 @@ func main() {
 
 	//Save Values
 	f := store.New(false, jasmin.Name)
-	f.Save(context.TODO(), jasmin.GetYesterdaySum(qs), jasmin.BuySum())
+	f.Save(context.TODO(), jasmin.GetYesterdaySum(qs), jasmin.BuySum(), jasmin.RegularMarketTime(qs))
 
 	//Load Values
 	a, err := f.Load(context.TODO())

@@ -3,6 +3,7 @@ package store
 import (
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestCreatePath(t *testing.T) {
@@ -15,7 +16,10 @@ func TestCreatePath(t *testing.T) {
 	}
 }
 
-func checkData(s string, t *testing.T) {
+func TestGetData(t *testing.T) {
+	s := `[{"time":1538171940,"value":3328.5918,"diff":200},
+	{"time":1538172010,"value":3114.1509,"diff":215}]`
+
 	a, err := getData(strings.NewReader(s))
 	if err != nil {
 		t.Errorf("No Error expected %v", err)
@@ -43,41 +47,54 @@ func checkData(s string, t *testing.T) {
 	}
 }
 
-func TestGetData(t *testing.T) {
-	s := `[{"time":1538171940,"value":3328.5918,"diff":200},
-	{"time":1538172010,"value":3114.1509,"diff":215}]`
+func data() []Data {
+	data := []Data{
+		Data{Time: 1538431140, Value: 3798.3943, Diff: 191.1499}, //1.10.18
+		Data{Time: 1538517540, Value: 3798.3943, Diff: 191.1499}, //2.10.18
+		Data{Time: 1538603940, Value: 3797.939, Diff: 190.69458}, //3.10.18
+		Data{Time: 1538690340, Value: 3704.2249, Diff: 96.98047}} //4.10.18
 
-	checkData(s, t)
-}
-
-func TestRemovePreviousDuplicatesFromData(t *testing.T) {
-	s := `[{"time":1538171940,"value":3114.1509,"diff":215},
-	{"time":1538172010,"value":3114.1509,"diff":215},
-	{"time":1538171940,"value":3328.5918,"diff":200}]`
-
-	checkData(s, t)
-}
-
-func TestSortedDataArray(t *testing.T) {
-	s := `[{"time":1538690340,"timehuman":"2018-10-04T21:59:00Z","value":3704.2249,"diff":100.004},
-	{"time":1538949540,"timehuman":"2018-10-07T21:59:00Z","value":3593.6108,"diff":100.007},
-	{"time":1538603940,"timehuman":"2018-10-03T21:59:00Z","value":3797.939,"diff":100.003},
-	{"time":1538863140,"timehuman":"2018-10-06T21:59:00Z","value":3704.2249,"diff":100.006},
-	{"time":1538776740,"timehuman":"2018-10-05T21:59:00Z","value":3704.2249,"diff":100.005},
-	{"time":1538517540,"timehuman":"2018-10-02T21:59:00Z","value":3798.3943,"diff":100.002},
-	{"time":1538431140,"timehuman":"2018-10-01T21:59:00Z","value":3798.3943,"diff":100.001}]`
-
-	a, err := getData(strings.NewReader(s))
-	if err != nil {
-		t.Errorf("No Error expected %v", err)
+	for i, d := range data {
+		d.TimeHuman = time.Unix(int64(d.Time), 0)
+		data[i] = d
 	}
 
-	var c float32
-	for i := 0; i < 7; i++ {
-		c = float32(i+1)/1000.0 + 100
+	return data
+}
 
-		if a[i].Diff != c {
-			t.Errorf("Expected diff of %v, got %v ", c, a[i].Diff)
-		}
+func TestAppendToListNewData(t *testing.T) {
+	newData := Data{Value: 3704.2249, Diff: 96.98047} //yesterdays data - 5.10.18
+	regMarketTime := 1538863140                       //6.10.18
+
+	a := appendToList(data(), newData, int64(regMarketTime))
+
+	if len(a) != 5 {
+		t.Errorf("New Data should be appended to list. Expected length of %v, got %v", 5, len(a))
+	}
+
+	dLast := a[4]
+	if dLast.TimeHuman.Day() != 5 {
+		t.Errorf("Last entry should be for day %v, got %v", 5, dLast.TimeHuman)
+	}
+	if dLast.Value != 3704.2249 {
+		t.Errorf("Last entry value should be %v, got %v", 3704.2249, dLast.Value)
+	}
+}
+func TestAppendToListDuplicatedData(t *testing.T) {
+	newData := Data{Value: 4000, Diff: 100} //yesterdays updated data - 4.10.18
+	regMarketTime := 1538776740             //5.10.18
+
+	a := appendToList(data(), newData, int64(regMarketTime))
+
+	if len(a) != 4 {
+		t.Errorf("New Data should have overriden last entry of list. Expected length of %v, got %v", 4, len(a))
+	}
+
+	dLast := a[3]
+	if dLast.TimeHuman.Day() != 4 {
+		t.Errorf("Last entry should be for day %v, got %v", 4, dLast.TimeHuman)
+	}
+	if dLast.Value != 4000 {
+		t.Errorf("Last entry value should be %v, got %v", 4000, dLast.Value)
 	}
 }

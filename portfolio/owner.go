@@ -46,3 +46,13 @@ func (o Owner) GetTodaySum(qs Quotes) (sum float32) {
 	}
 	return sum
 }
+
+//RegularMarketTime gets the latest
+func (o Owner) RegularMarketTime(qs Quotes) (t int64) {
+	for _, q := range qs {
+		if q.Time > t {
+			t = q.Time
+		}
+	}
+	return t
+}
