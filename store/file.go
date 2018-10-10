@@ -23,6 +23,9 @@ type Data struct {
 	Diff      float32   `json:"diff"`
 }
 
+var today = time.Now().Day()
+var skipDates = make(map[int]struct{})
+
 //Save store quote into file
 func (file File) Save(c context.Context, quote float32, buy float32, regMTime int64) error {
 	f, err := os.OpenFile(file.path, os.O_RDONLY, 0600)
@@ -67,11 +70,29 @@ func (file File) Load(c context.Context) ([]Data, error) {
 
 //append last data to list - override if we have already this date in the list
 func appendToList(data []Data, d Data, regMTime int64) []Data {
+	//skip this if regularMarketTime is not today -> weekends, public holidays
+	if today > time.Unix(regMTime, 0).Day() {
+		skipDates[today] = struct{}{}
+		return data
+	}
+
 	//closure date
 	t := calcStoreTime(regMTime)
+	skip := true
+	for skip {
+		_, skip = skipDates[t.Day()]
 
-	d.Time = int(t.Unix())
-	d.TimeHuman = t
+		if skip {
+			t = t.Add(time.Duration(-1) * time.Hour * 24)
+			continue
+		}
+
+		d.Time = int(t.Unix())
+		d.TimeHuman = t
+
+		//clear map
+		skipDates = make(map[int]struct{})
+	}
 
 	a := make([]Data, len(data))
 	copy(a, data)
