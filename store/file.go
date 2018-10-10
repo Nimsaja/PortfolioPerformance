@@ -78,6 +78,8 @@ func appendToList(data []Data, d Data, regMTime int64) []Data {
 
 	//closure date
 	t := calcStoreTime(regMTime)
+
+	//try yesterday, if not valid, go back one day etc.
 	skip := true
 	for skip {
 		_, skip = skipDates[t.Day()]

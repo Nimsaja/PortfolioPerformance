@@ -21,6 +21,8 @@ func main() {
 
 	fmt.Println("Quotes Today/Yesterday: ", jasmin.GetTodaySum(qs), jasmin.GetYesterdaySum(qs))
 	fmt.Println("Diffs Today/Yesterday: ", jasmin.GetTodaySum(qs)-jasmin.BuySum(), jasmin.GetYesterdaySum(qs)-jasmin.BuySum())
+	fmt.Println("MarketTime: ", time.Unix(jasmin.RegularMarketTime(qs), 0))
+	fmt.Println("")
 
 	//Save Values
 	f := store.New(false, jasmin.Name)
