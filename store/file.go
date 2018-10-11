@@ -79,22 +79,18 @@ func appendToList(data []Data, d Data, regMTime int64) []Data {
 	//closure date
 	t := calcStoreTime(regMTime)
 
-	//try yesterday, if not valid, go back one day etc.
-	skip := true
-	for skip {
-		_, skip = skipDates[t.Day()]
-
-		if skip {
-			t = t.Add(time.Duration(-1) * time.Hour * 24)
-			continue
-		}
-
-		d.Time = int(t.Unix())
-		d.TimeHuman = t
+	//go back number of days we skipped (2 for weekends e.g.), to store closure date on last business day
+	skip := len(skipDates)
+	if skip > 0 {
+		t = t.Add(time.Duration(-skip) * time.Hour * 24)
+		skip = 0
 
 		//clear map
 		skipDates = make(map[int]struct{})
 	}
+
+	d.Time = int(t.Unix())
+	d.TimeHuman = t
 
 	a := make([]Data, len(data))
 	copy(a, data)

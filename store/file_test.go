@@ -129,6 +129,9 @@ func TestAppendToListSkipWeekends(t *testing.T) {
 	if !exists {
 		t.Errorf("Should store day %v to skipDates. Got %v ", 6, skipDates)
 	}
+
+	//clear map
+	skipDates = make(map[int]struct{})
 }
 
 func TestAppendToListAfterWeekend(t *testing.T) {
