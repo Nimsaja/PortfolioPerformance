@@ -3,11 +3,11 @@ cron:
   url: /portfolio/hist
   schedule: every day 8:05
   timezone: Europe/Berlin
-- description: "fetch data from yesterday and store to bucket at 12"
+- description: "fetch data from yesterday and store to bucket at 10"
   url: /portfolio/hist
-  schedule: every day 9:30
+  schedule: every day 10:00
   timezone: Europe/Berlin
-- description: "fetch data from yesterday and store to bucket at 17"
+- description: "fetch data from yesterday and store to bucket at 12"
   url: /portfolio/hist
   schedule: every day 12:00
   timezone: Europe/Berlin
