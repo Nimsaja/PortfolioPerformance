@@ -67,37 +67,16 @@ func (file File) Load(c context.Context) ([]Data, error) {
 
 //append last data to list - override if we have already this date in the list
 func appendToList(data []Data, d Data, regMTime int64) []Data {
-	var today = time.Now().Day()
-	var skipDates = make(map[int]struct{})
-
-	//skip this if regularMarketTime is not today -> weekends, public holidays
-	if today > time.Unix(regMTime, 0).Day() {
-		skipDates[today] = struct{}{}
-		return data
-	}
-
-	//closure date
-	t := calcStoreTime(regMTime)
-
-	//go back number of days we skipped (2 for weekends e.g.), to store closure date on last business day
-	skip := len(skipDates)
-	if skip > 0 {
-		t = t.Add(time.Duration(-skip) * time.Hour * 24)
-		skip = 0
-
-		//clear map
-		skipDates = make(map[int]struct{})
-	}
-
-	d.Time = int(t.Unix())
-	d.TimeHuman = t
+	d.Time = int(regMTime)
+	d.TimeHuman = time.Unix(regMTime, 0)
 
 	a := make([]Data, len(data))
 	copy(a, data)
+	l := len(data)
 
 	//check if this is already in list, can only be the last element -> override the values
-	if a[len(a)-1].TimeHuman.Day() == t.Day() {
-		a[len(a)-1] = d
+	if a[l-1].TimeHuman.Day() == d.TimeHuman.Day() {
+		a[l-1] = d
 	} else {
 		a = append(a, d)
 	}

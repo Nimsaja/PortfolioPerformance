@@ -19,14 +19,13 @@ func main() {
 	qs := urlServ.GetAllQuotes(context.TODO(), jasmin.Stocks())
 	fmt.Println("Elapsed time: ", time.Now().Sub(start))
 
-	fmt.Println("Quotes Today/Yesterday: ", jasmin.GetTodaySum(qs), jasmin.GetYesterdaySum(qs))
-	fmt.Println("Diffs Today/Yesterday: ", jasmin.GetTodaySum(qs)-jasmin.BuySum(), jasmin.GetYesterdaySum(qs)-jasmin.BuySum())
-	fmt.Println("MarketTime: ", time.Unix(jasmin.RegularMarketTime(qs), 0))
+	fmt.Println("Quote/Diff/Time: ", jasmin.GetTodaySum(qs), jasmin.GetTodaySum(qs)-jasmin.BuySum(),
+		time.Unix(jasmin.RegularMarketTime(qs), 0))
 	fmt.Println("")
 
 	//Save Values
 	f := store.New(false, jasmin.Name)
-	f.Save(context.TODO(), jasmin.GetYesterdaySum(qs), jasmin.BuySum(), jasmin.RegularMarketTime(qs))
+	f.Save(context.TODO(), jasmin.GetTodaySum(qs), jasmin.BuySum(), jasmin.RegularMarketTime(qs))
 
 	//Load Values
 	a, err := f.Load(context.TODO())
