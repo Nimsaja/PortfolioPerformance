@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"time"
 
 	"github.com/Nimsaja/PortfolioPerformance/data"
 	"github.com/Nimsaja/PortfolioPerformance/portfolio"
@@ -84,12 +83,12 @@ func loadHistData(w http.ResponseWriter, r *http.Request) {
 	qs := app.urlService.GetAllQuotes(c, jasmin.Stocks())
 
 	//Save Values
-	err := app.storage.Save(c, jasmin.GetYesterdaySum(qs), jasmin.BuySum(), jasmin.RegularMarketTime(qs))
+	err := app.storage.Save(c, jasmin.GetTodaySum(qs), jasmin.BuySum(), jasmin.RegularMarketTime(qs))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		writeOutAsJSON(w, err.Error())
 	} else {
-		s := fmt.Sprintf("Successfully wrote new data to storage. Sum from Yesterday: %v", jasmin.GetYesterdaySum(qs))
+		s := fmt.Sprintf("Successfully wrote new data to storage. Sum from today: %v", jasmin.GetTodaySum(qs))
 		writeOutAsJSON(w, s)
 	}
 }
@@ -105,10 +104,10 @@ func getTableData(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Error ", err)
 	}
 
-	//add current value
+	//add current value to array (not to file - this is done a few times a day by a cron job)
 	t := jasmin.RegularMarketTime(qs)
-	d := store.Data{Time: int(t), TimeHuman: time.Unix(t, 0), Value: jasmin.GetTodaySum(qs), Diff: jasmin.GetTodaySum(qs) - jasmin.BuySum()}
-	a = append(a, d)
+	d := store.Data{Value: jasmin.GetTodaySum(qs), Diff: jasmin.GetTodaySum(qs) - jasmin.BuySum()}
+	a = store.AppendToList(a, d, t)
 
 	writeOutAsJSON(w, a)
 }

@@ -44,7 +44,7 @@ func (f Bucket) Save(c context.Context, quote float32, buy float32, regMTime int
 		return err
 	}
 
-	newData := appendToList(data, Data{Value: quote, Diff: quote - buy}, regMTime)
+	newData := AppendToList(data, Data{Value: quote, Diff: quote - buy}, regMTime)
 
 	//store everything into bucket
 	wc := bucket.Object(fileName).NewWriter(c)

@@ -38,7 +38,7 @@ func (file File) Save(c context.Context, quote float32, buy float32, regMTime in
 		return err
 	}
 
-	newData := appendToList(data, Data{Value: quote, Diff: quote - buy}, regMTime)
+	newData := AppendToList(data, Data{Value: quote, Diff: quote - buy}, regMTime)
 
 	s, err := convert2JSON(newData)
 	if err != nil {
@@ -65,8 +65,8 @@ func (file File) Load(c context.Context) ([]Data, error) {
 	return getData(f)
 }
 
-//append last data to list - override if we have already this date in the list
-func appendToList(data []Data, d Data, regMTime int64) []Data {
+//AppendToList append last data to list - override if we have already this date in the list
+func AppendToList(data []Data, d Data, regMTime int64) []Data {
 	d.Time = int(regMTime)
 	d.TimeHuman = time.Unix(regMTime, 0)
 
