@@ -20,8 +20,8 @@ func owner() Owner {
 
 func quotes() Quotes {
 	return []Quote{
-		Quote{Stock: google, Close: 100, Price: 110},
-		Quote{Stock: amazon, Close: 1.5, Price: 1.4},
+		Quote{Stock: google, Price: 110},
+		Quote{Stock: amazon, Price: 1.4},
 	}
 }
 
@@ -32,13 +32,7 @@ func TestGetBuySum(t *testing.T) {
 		t.Errorf("Expected a sum of %v, got %v", 35004.2, s)
 	}
 }
-func TestGetYesterdaySum(t *testing.T) {
-	s := owner().GetYesterdaySum(quotes())
 
-	if s != 50.5 {
-		t.Errorf("Expected a sum of %v, got %v", 50.5, s)
-	}
-}
 func TestGetTodaySum(t *testing.T) {
 	s := owner().GetTodaySum(quotes())
 

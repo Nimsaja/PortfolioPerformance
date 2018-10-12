@@ -41,7 +41,7 @@ var url = "https://query1.finance.yahoo.com/v7/finance/quote?lang=en-US&region=U
 func (svc URLService) GetQuote(c context.Context, s portfolio.Stock) (portfolio.Quote, error) {
 	r, err := getQuote(svc.client(c), s.Symbol)
 
-	return portfolio.Quote{Stock: s, Close: r.Close, Price: r.Price, Time: r.Time}, err
+	return portfolio.Quote{Stock: s, Price: r.Price, Time: r.Time}, err
 }
 
 //GetAllQuotes ...

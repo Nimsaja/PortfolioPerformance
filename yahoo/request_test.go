@@ -19,8 +19,8 @@ func TestGetQuote(t *testing.T) {
 		t.Errorf("No error expected %v", err)
 	}
 
-	if q.Close == 0 {
-		t.Errorf("Expected a close value different from zero, got %v", q.Close)
+	if q.Price == 0 {
+		t.Errorf("Expected a price value different from zero, got %v", q.Price)
 	}
 }
 func TestPrivateGetQuote(t *testing.T) {
@@ -46,9 +46,6 @@ func TestGetAllQuotes(t *testing.T) {
 
 	if (ql[0].Price * ql[1].Price) == 0 {
 		t.Errorf("Expected both prices to be greater than zero. Got %v and %v.", ql[0].Price, ql[1].Price)
-	}
-	if (ql[0].Close * ql[1].Close) == 0 {
-		t.Errorf("Expected both close values to be greater than zero. Got %v and %v.", ql[0].Close, ql[1].Close)
 	}
 }
 

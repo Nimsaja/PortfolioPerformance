@@ -11,7 +11,6 @@ type Stock struct {
 //Quote structure
 type Quote struct {
 	Stock
-	Close float32
 	Price float32
 	Time  int64
 }
