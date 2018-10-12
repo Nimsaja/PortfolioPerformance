@@ -36,5 +36,5 @@ func main() {
 		fmt.Println(d.TimeHuman, ": ", d.Value, ", ", d.Diff)
 	}
 
-	plot.Create(a, jasmin.GetTodaySum(qs), jasmin.BuySum())
+	plot.Create(a)
 }
