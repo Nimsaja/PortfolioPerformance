@@ -67,7 +67,7 @@ func TestAppendToListNewData(t *testing.T) {
 	newData := Data{Value: 4000, Diff: 100}
 	regMarketTime := 1538776740 //5.10.18
 
-	a := appendToList(data(), newData, int64(regMarketTime))
+	a := AppendToList(data(), newData, int64(regMarketTime))
 
 	if len(a) != 5 {
 		t.Errorf("New Data should be appended to list. Expected length of %v, got %v", 5, len(a))
@@ -90,7 +90,7 @@ func TestAppendToListDuplicatedData(t *testing.T) {
 	newData := Data{Value: 4000, Diff: 100} //updated data for 4.10.18
 	regMarketTime := 1538690340             //4.10.18
 
-	a := appendToList(data(), newData, int64(regMarketTime))
+	a := AppendToList(data(), newData, int64(regMarketTime))
 
 	if len(a) != 4 {
 		t.Errorf("New Data should have overriden last entry of list. Expected length of %v, got %v", 4, len(a))
