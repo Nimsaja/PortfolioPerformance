@@ -1,13 +1,21 @@
 cron:
-- description: "fetch data from yesterday and store to bucket at 8"
+- description: "fetch data and store to bucket at 8"
   url: /portfolio/hist
   schedule: every day 8:05
   timezone: Europe/Berlin
-- description: "fetch data from yesterday and store to bucket at 10"
+- description: "fetch data and store to bucket at 10"
   url: /portfolio/hist
   schedule: every day 10:00
   timezone: Europe/Berlin
-- description: "fetch data from yesterday and store to bucket at 12"
+- description: "fetch data and store to bucket at 12"
   url: /portfolio/hist
   schedule: every day 12:00
+  timezone: Europe/Berlin
+- description: "fetch data and store to bucket at 17"
+  url: /portfolio/hist
+  schedule: every day 17:00
+  timezone: Europe/Berlin
+- description: "fetch data and store to bucket at 22"
+  url: /portfolio/hist
+  schedule: every day 22:00
   timezone: Europe/Berlin
