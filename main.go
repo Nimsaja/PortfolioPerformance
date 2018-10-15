@@ -37,4 +37,26 @@ func main() {
 	}
 
 	plot.Create(a)
+
+	//show List a Stock prices
+	fmt.Println("\n****************************")
+	for _, p := range jasmin.PortFolio {
+		buy := p.Count * p.Buy
+
+		q, _ := urlServ.GetQuote(context.TODO(), p.Stock)
+
+		price := p.Count * q.Price
+		tab := "\t\t"
+		if len(p.Name) > 6 {
+			tab = "\t"
+		}
+
+		fmt.Printf("%s:%s Preis: %6.2f, \tWert: %.2f, \tDiff: %.2f \n", p.Name, tab, q.Price, price, price-buy)
+	}
+
+	fmt.Println("\n****************************")
+	fmt.Println("Quote/Diff/Time: ", jasmin.GetTodaySum(qs), jasmin.GetTodaySum(qs)-jasmin.BuySum(),
+		time.Unix(jasmin.RegularMarketTime(qs), 0))
+	fmt.Println("")
+
 }

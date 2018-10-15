@@ -15,15 +15,15 @@ var (
 )
 
 var stockValue = []portfolio.StockValue{
-	portfolio.StockValue{Stock: google, Count: 0.329, Buy: 1065.028},
-	portfolio.StockValue{Stock: amazon, Count: 0.113, Buy: 1777.077},
+	portfolio.StockValue{Stock: google, Count: 0.844, Buy: 1006.668},
+	portfolio.StockValue{Stock: amazon, Count: 0.389, Buy: 1542.601},
 	portfolio.StockValue{Stock: netflix, Count: 2, Buy: 224.25},
 	portfolio.StockValue{Stock: siemens, Count: 5, Buy: 106.02},
 	portfolio.StockValue{Stock: xING, Count: 2, Buy: 328.765},
-	portfolio.StockValue{Stock: biotech, Count: 3.707, Buy: 198.831},
+	portfolio.StockValue{Stock: biotech, Count: 7.011, Buy: 190.721},
 	portfolio.StockValue{Stock: auto, Count: 33, Buy: 7.051},
 	portfolio.StockValue{Stock: tecDax, Count: 10, Buy: 25.01},
-	portfolio.StockValue{Stock: oekoworld, Count: 1.055, Buy: 189.631},
+	portfolio.StockValue{Stock: oekoworld, Count: 3.393, Buy: 176.833},
 }
 
 //Jasmin portfolio

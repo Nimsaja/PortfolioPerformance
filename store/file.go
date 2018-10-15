@@ -70,18 +70,16 @@ func AppendToList(data []Data, d Data, regMTime int64) []Data {
 	d.Time = int(regMTime)
 	d.TimeHuman = time.Unix(regMTime, 0)
 
-	a := make([]Data, len(data))
-	copy(a, data)
 	l := len(data)
 
 	//check if this is already in list, can only be the last element -> override the values
-	if a[l-1].TimeHuman.Day() == d.TimeHuman.Day() {
-		a[l-1] = d
+	if data[l-1].TimeHuman.Day() == d.TimeHuman.Day() {
+		data[l-1] = d
 	} else {
-		a = append(a, d)
+		data = append(data, d)
 	}
 
-	return a
+	return data
 }
 
 func getData(r io.Reader) ([]Data, error) {
