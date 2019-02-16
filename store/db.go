@@ -70,13 +70,20 @@ func SaveQuote(ctx context.Context, client *datastore.Client, quote float32, dif
 	it := client.Run(ctx, query)
 	for {
 		var d SaveData
-		_, err := it.Next(&d)
+		k, err := it.Next(&d)
 		if err == iterator.Done {
 			break
 		}
 		if err != nil {
 			log.Fatalf("Error fetching next data: %v", err)
 		}
-		fmt.Printf("SavedData for Date %v : %v\n", checkTime, d)
+		fmt.Printf("SavedData for Date %v : %v, %v\n", checkTime, d, k)
+
+		//overwrite with dummy value
+		d.TodaySum = 7000
+		if _, err := client.Put(ctx, k, &d); err != nil {
+			log.Fatalf("Failed to save quote: %v", err)
+		}
+		fmt.Printf("Saved %v: %v\n", key, d)
 	}
 }
