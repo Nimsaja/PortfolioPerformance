@@ -47,7 +47,8 @@ func handler() http.Handler {
 
 // App ...
 type App struct {
-	storage    store.StorageService
+	storage2BK store.StorageService
+	storage2DB store.StorageService // TODO replace storage2BK with this later
 	urlService yahoo.URLService
 }
 
@@ -59,7 +60,7 @@ func inCloud() bool {
 // New creates new App with services
 func New() App {
 	inCloud := inCloud()
-	return App{store.New(inCloud, jasmin.Name), yahoo.New(inCloud)}
+	return App{store.New(inCloud, jasmin.Name), store.New(inCloud, jasmin.Name+"_DB"), yahoo.New(inCloud)}
 }
 
 var jasmin portfolio.Owner
@@ -78,17 +79,28 @@ func main() {
 	appengine.Main()
 }
 
+// this is called by the cron job to save the daily datas
 func loadHistData(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	qs := app.urlService.GetAllQuotes(c, jasmin.Stocks())
 
 	//Save Values
-	err := app.storage.Save(c, jasmin.GetTodaySum(qs), jasmin.BuySum(), jasmin.RegularMarketTime(qs))
+	err := app.storage2BK.Save(c, jasmin.GetTodaySum(qs), jasmin.BuySum(), jasmin.RegularMarketTime(qs))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		writeOutAsJSON(w, err.Error())
 	} else {
-		s := fmt.Sprintf("Successfully wrote new data to storage. Sum from today: %v", jasmin.GetTodaySum(qs))
+		s := fmt.Sprintf("Successfully wrote new data to bucket. Sum from today: %v", jasmin.GetTodaySum(qs))
+		writeOutAsJSON(w, s)
+	}
+
+	//Save Values to Database
+	err := app.storage2DB.Save(c, jasmin.GetTodaySum(qs), jasmin.BuySum(), jasmin.RegularMarketTime(qs))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeOutAsJSON(w, err.Error())
+	} else {
+		s := fmt.Sprintf("Successfully wrote new data to database. Sum from today: %v", jasmin.GetTodaySum(qs))
 		writeOutAsJSON(w, s)
 	}
 }
@@ -99,7 +111,7 @@ func getTableData(w http.ResponseWriter, r *http.Request) {
 	qs := app.urlService.GetAllQuotes(c, jasmin.Stocks())
 
 	//Load Historical Data from File
-	a, err := app.storage.Load(c)
+	a, err := app.storage2BK.Load(c)
 	if err != nil {
 		fmt.Println("Error ", err)
 	}

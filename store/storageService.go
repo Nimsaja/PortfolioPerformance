@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"strings"
 )
 
 //StorageService interface
@@ -14,6 +15,9 @@ type StorageService interface {
 func New(inCloud bool, name string) StorageService {
 	p := createPath(name)
 	var s StorageService
+	if strings.Contains(name, "_DB") {
+		return Database{owner: name}
+	}
 	if inCloud {
 		s = Bucket{path: p}
 	} else {

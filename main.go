@@ -27,6 +27,10 @@ func main() {
 	f := store.New(false, jasmin.Name)
 	f.Save(context.TODO(), jasmin.GetTodaySum(qs), jasmin.BuySum(), jasmin.RegularMarketTime(qs))
 
+	//Save Values to Database
+	d := store.New(false, jasmin.Name+"_DB")
+	d.Save(context.TODO(), jasmin.GetTodaySum(qs), jasmin.BuySum(), jasmin.RegularMarketTime(qs))
+
 	//Load Values
 	a, err := f.Load(context.TODO())
 	if err != nil {
@@ -59,8 +63,8 @@ func main() {
 		time.Unix(jasmin.RegularMarketTime(qs), 0))
 	fmt.Println("")
 
-	//play with google datastore
-	ctx, client := store.NewDB()
-	store.SaveQuote(ctx, client, jasmin.GetTodaySum(qs), jasmin.GetTodaySum(qs)-jasmin.BuySum(), time.Unix(jasmin.RegularMarketTime(qs), 0))
+	// //play with google datastore
+	// ctx, client := store.NewDB()
+	// store.SaveQuote(ctx, client, jasmin.GetTodaySum(qs), jasmin.GetTodaySum(qs)-jasmin.BuySum(), time.Unix(jasmin.RegularMarketTime(qs), 0))
 
 }
