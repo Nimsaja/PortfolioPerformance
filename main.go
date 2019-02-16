@@ -59,4 +59,8 @@ func main() {
 		time.Unix(jasmin.RegularMarketTime(qs), 0))
 	fmt.Println("")
 
+	//play with google datastore
+	ctx, client := store.NewDB()
+	store.SaveQuote(ctx, client, jasmin.GetTodaySum(qs), jasmin.GetTodaySum(qs)-jasmin.BuySum(), time.Unix(jasmin.RegularMarketTime(qs), 0))
+
 }
