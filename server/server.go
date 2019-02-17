@@ -95,7 +95,7 @@ func loadHistData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Save Values to Database
-	err := app.storage2DB.Save(c, jasmin.GetTodaySum(qs), jasmin.BuySum(), jasmin.RegularMarketTime(qs))
+	err = app.storage2DB.Save(c, jasmin.GetTodaySum(qs), jasmin.BuySum(), jasmin.RegularMarketTime(qs))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		writeOutAsJSON(w, err.Error())
