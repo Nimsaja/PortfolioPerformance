@@ -1,6 +1,12 @@
 package data
 
-import "github.com/Nimsaja/PortfolioPerformance/portfolio"
+import (
+	"context"
+	"fmt"
+
+	"cloud.google.com/go/datastore"
+	"github.com/Nimsaja/PortfolioPerformance/portfolio"
+)
 
 var (
 	google    = portfolio.Stock{Name: "Google", Symbol: "ABEC.DE"}
@@ -26,7 +32,54 @@ var stockValue = []portfolio.StockValue{
 	portfolio.StockValue{Stock: oekoworld, Count: 3.393, Buy: 176.833},
 }
 
+//StockValueStorage structure
+type StockValueStorage struct {
+	Owner  string
+	Name   string
+	Symbol string
+	Count  float32
+	Buy    float32
+}
+
 //Jasmin portfolio
 func Jasmin() portfolio.Owner {
+	/*
+	 Init Database
+	*/
+	c := context.Background()
+
+	// Set your Google Cloud Platform project ID.
+	projectID := "portfolio-218213"
+
+	// Creates a client.
+	client, err := datastore.NewClient(c, projectID)
+	if err != nil {
+		fmt.Printf("Failed to create client: %v", err)
+	}
+
+	/*
+	 save data to database - once!
+	*/
+	// Sets the kind for the new entity.
+	kind := "StockValueStorage"
+
+	for _, v := range stockValue {
+
+		data := &StockValueStorage{
+			Owner:  "Jasmin",
+			Name:   v.Stock.Name,
+			Symbol: v.Stock.Symbol,
+			Count:  v.Count,
+			Buy:    v.Buy,
+		}
+
+		key := datastore.IncompleteKey(kind, nil)
+
+		if _, err := client.Put(c, key, data); err != nil {
+			fmt.Printf("Failed to save quote: %v", err)
+		}
+	}
+
+	//for now don't change something here
 	return portfolio.Owner{Name: "Jasmin", PortFolio: stockValue}
 }
