@@ -14,6 +14,8 @@ import (
 func main() {
 	jasmin := data.Jasmin()
 
+	fmt.Printf("Loaded Data for Jasmin: %v\n", jasmin)
+
 	start := time.Now()
 	urlServ := yahoo.New(false)
 	qs := urlServ.GetAllQuotes(context.TODO(), jasmin.Stocks())
