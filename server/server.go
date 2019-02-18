@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/Nimsaja/PortfolioPerformance/data"
 	"github.com/Nimsaja/PortfolioPerformance/portfolio"
@@ -100,7 +101,7 @@ func loadHistData(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		writeOutAsJSON(w, err.Error())
 	} else {
-		s := fmt.Sprintf("Successfully wrote new data to database. Sum from today: %v", jasmin.GetTodaySum(qs))
+		s := fmt.Sprintf("Successfully wrote new data to database. Sum from today: %v. Log time %v.", jasmin.GetTodaySum(qs), time.Now())
 		writeOutAsJSON(w, s)
 	}
 }
