@@ -29,10 +29,6 @@ func main() {
 	f := store.New(false, jasmin.Name)
 	f.Save(context.TODO(), jasmin.GetTodaySum(qs), jasmin.BuySum(), jasmin.RegularMarketTime(qs))
 
-	//Save Values to Database
-	d := store.New(false, jasmin.Name+"_DB")
-	d.Save(context.TODO(), jasmin.GetTodaySum(qs), jasmin.BuySum(), jasmin.RegularMarketTime(qs))
-
 	//Load Values
 	a, err := f.Load(context.TODO())
 	if err != nil {

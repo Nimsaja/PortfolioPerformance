@@ -2,11 +2,9 @@ package data
 
 import (
 	"context"
-	"fmt"
 
-	"cloud.google.com/go/datastore"
 	"github.com/Nimsaja/PortfolioPerformance/portfolio"
-	"google.golang.org/api/iterator"
+	"google.golang.org/appengine/datastore"
 )
 
 // var (
@@ -46,41 +44,22 @@ type StockValueStorage struct {
 func Jasmin() portfolio.Owner {
 	// store2DB();
 	name := "Jasmin"
-	stockValue := loadFromDB(name)
+	stockValue := loadFromDB(c, name)
 
 	return portfolio.Owner{Name: name, PortFolio: stockValue}
 }
 
-func loadFromDB(owner string) (values []portfolio.StockValue) {
-	/*
-	 Init Database
-	*/
-	c := context.Background()
-
-	// Set your Google Cloud Platform project ID.
-	projectID := "portfolio-218213"
-
-	// Creates a client.
-	client, err := datastore.NewClient(c, projectID)
-	if err != nil {
-		fmt.Printf("Failed to create client: %v", err)
-	}
-
+func loadFromDB(c context.Context, owner string) (values []portfolio.StockValue) {
 	// get all stocks for this owner
 	query := datastore.NewQuery("StockValueStorage").Filter("Owner =", owner)
 
-	it := client.Run(c, query)
-	for {
-		var d StockValueStorage
-		_, err := it.Next(&d)
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			fmt.Printf("Error fetching next data: %v", err)
-			return values
-		}
+	data := []StockValueStorage{}
+	_, err := query.GetAll(c, &data)
+	if err != nil {
+		return values
+	}
 
+	for _, d := range data {
 		el := portfolio.StockValue{
 			Stock: portfolio.Stock{Name: d.Name, Symbol: d.Symbol},
 			Count: d.Count,
