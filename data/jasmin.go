@@ -1,10 +1,7 @@
 package data
 
 import (
-	"context"
-
 	"github.com/Nimsaja/PortfolioPerformance/portfolio"
-	"google.golang.org/appengine/datastore"
 )
 
 // var (
@@ -31,45 +28,12 @@ import (
 // 	portfolio.StockValue{Stock: oekoworld, Count: 3.393, Buy: 176.833},
 // }
 
-//StockValueStorage structure
-type StockValueStorage struct {
-	Owner  string
-	Name   string
-	Symbol string
-	Count  float32
-	Buy    float32
-}
-
 //Jasmin portfolio
 func Jasmin() portfolio.Owner {
 	// store2DB();
 	name := "Jasmin"
-	stockValue := loadFromDB(c, name)
 
-	return portfolio.Owner{Name: name, PortFolio: stockValue}
-}
-
-func loadFromDB(c context.Context, owner string) (values []portfolio.StockValue) {
-	// get all stocks for this owner
-	query := datastore.NewQuery("StockValueStorage").Filter("Owner =", owner)
-
-	data := []StockValueStorage{}
-	_, err := query.GetAll(c, &data)
-	if err != nil {
-		return values
-	}
-
-	for _, d := range data {
-		el := portfolio.StockValue{
-			Stock: portfolio.Stock{Name: d.Name, Symbol: d.Symbol},
-			Count: d.Count,
-			Buy:   d.Buy,
-		}
-
-		values = append(values, el)
-	}
-
-	return values
+	return portfolio.Owner{Name: name}
 }
 
 // func store2DB() {

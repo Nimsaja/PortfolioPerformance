@@ -83,10 +83,18 @@ func main() {
 // this is called by the cron job to save the daily datas
 func loadHistData(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	qs := app.urlService.GetAllQuotes(c, jasmin.Stocks())
+	stocks, err := jasmin.Stocks(c)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeOutAsJSON(w, err.Error())
+	} else {
+		s := fmt.Sprintf("Successfully read stock values from database: %v; %v", stocks, jasmin.PortFolio)
+		writeOutAsJSON(w, s)
+	}
+	qs := app.urlService.GetAllQuotes(c, stocks)
 
 	//Save Values
-	err := app.storage2BK.Save(c, jasmin.GetTodaySum(qs), jasmin.BuySum(), jasmin.RegularMarketTime(qs))
+	err = app.storage2BK.Save(c, jasmin.GetTodaySum(qs), jasmin.BuySum(), jasmin.RegularMarketTime(qs))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		writeOutAsJSON(w, err.Error())
@@ -109,7 +117,12 @@ func loadHistData(w http.ResponseWriter, r *http.Request) {
 func getTableData(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	//need to get all quotes for the current value
-	qs := app.urlService.GetAllQuotes(c, jasmin.Stocks())
+	stocks, err := jasmin.Stocks(c)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		writeOutAsJSON(w, err.Error())
+	}
+	qs := app.urlService.GetAllQuotes(c, stocks)
 
 	//Load Historical Data from File
 	a, err := app.storage2BK.Load(c)
